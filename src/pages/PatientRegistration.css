@@ -1,0 +1,258 @@
+/* src/pages/PatientRegistration.css */
+
+.patient-list-container {
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px; 
+}
+
+/* Pagination Controls */
+.pagination-controls {
+  display: flex;
+  justify-content: flex-start; 
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px; 
+  padding: 10px 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--border-muted);
+  border-top: 1px solid var(--border-muted); 
+}
+.pagination-controls .form-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0; 
+}
+.pagination-controls .form-group label {
+  margin-bottom: 0;
+  color: var(--text-muted);
+}
+.pagination-controls .form-group select {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--bg-light);
+  color: var(--text);
+}
+.pagination-controls .page-info {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  font-weight: bold;
+  flex-grow: 1;
+  text-align: center;
+}
+.pagination-controls .pagination-buttons { display: flex; gap: 10px; }
+.pagination-btn {
+  padding: 8px 12px;
+  background-color: transparent;
+  color: var(--secondary);
+  border: 1px solid var(--secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s, color 0.2s;
+}
+.pagination-btn:hover:not(:disabled) {
+  background-color: var(--secondary);
+  color: var(--btn-text-dark);
+}
+.pagination-btn:disabled {
+  color: var(--text-muted);
+  border-color: var(--border-muted);
+  cursor: not-allowed;
+}
+
+/* Modal Form */
+.add-patient-form-modal form {
+  display: flex;
+  flex-direction: column; 
+  gap: 15px;
+}
+.add-patient-form-modal .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.add-patient-form-modal .form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--text-muted);
+}
+.add-patient-form-modal .form-group input,
+.add-patient-form-modal .form-group select {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--bg-light);
+  color: var(--text);
+}
+
+/* Button Styles */
+.submit-btn {
+  padding: 10px 15px;
+  background: var(--success-gradient);
+  color: var(--btn-text-dark);
+  border: 1px solid var(--success-dark);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+.submit-btn:hover { filter: brightness(1.1); }
+
+.submit-btn-small { 
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  background: var(--success-gradient);
+  color: var(--btn-text-dark);
+  border: 1px solid var(--success-dark);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+.submit-btn-small:hover { filter: brightness(1.1); }
+
+/* Registration Table */
+.registration-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.registration-table th,
+.registration-table td {
+  border-bottom: 1px solid var(--border-muted);
+  padding: 16px; 
+  text-align: left;
+  color: var(--text);
+}
+.registration-table tr:last-child td {
+  border-bottom: none;
+}
+.registration-table th { 
+  background: var(--bg);
+  color: var(--text-muted); 
+  font-weight: bold;
+}
+
+/* Status Badge Styles */
+.status-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--btn-text-dark);
+}
+.status-WAITING,
+.status-triage { background-color: var(--warning); }
+.status-PENDING { background-color: var(--warning); } 
+.status-WITH_DOCTOR,
+.status-consultation { background-color: var(--info); }
+.status-COMPLETE { background-color: var(--success); }
+
+.page-error, .form-error {
+  color: var(--danger);
+  margin: 10px 0;
+}
+
+/* Toggle Button */
+.toggle-view-btn {
+  width: 100%;
+  max-width: 400px; /* Match search bar width */
+  margin: 10px auto 0 auto; /* Center the button */
+  padding: 10px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  background-color: transparent;
+  color: var(--secondary); /* Use secondary color */
+  border: 1px solid var(--secondary);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+.toggle-view-btn:hover {
+  background-color: var(--secondary);
+  color: var(--btn-text-dark);
+}
+
+.form-divider {
+  border: none;
+  /* Removed the divider */
+}
+.text-center {
+  text-align: center;
+  margin: 20px 0 10px 0; /* Added space */
+  color: var(--text-muted);
+}
+
+/* Search Dropdown Styles */
+.search-wrapper {
+  position: relative; 
+  max-width: 400px; 
+  margin: 0 auto;  
+}
+
+.search-wrapper input {
+  width: 100%;
+  box-sizing: border-box; 
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--bg-light);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%; 
+  left: 0;
+  right: 0; 
+  background-color: var(--bg-light);
+  border: 1px solid var(--border);
+  border-top: none; 
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 8px oklch(from var(--text) l c h / 0.1);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  z-index: 10;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-results li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border-muted);
+}
+.search-results li:last-child {
+  border-bottom: none;
+}
+
+.search-results li:not(.no-results):hover {
+  background-color: var(--bg);
+  cursor: pointer;
+}
+
+.search-results li.no-results {
+  color: var(--text-muted);
+  font-style: italic;
+  justify-content: center;
+}
+
+/* Form Section */
+.form-section {
+  background: var(--bg-light);
+  border: 1px solid var(--border-muted);
+  padding: 20px;
+  border-radius: 8px;
+}
+.form-section h3 {
+  text-align: center;
+  margin-top: 0;
+}

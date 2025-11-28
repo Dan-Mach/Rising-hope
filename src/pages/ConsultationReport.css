@@ -1,0 +1,52 @@
+.report-page {
+  max-width: 100%; 
+  margin: 0;
+}
+
+
+.report-patient-header {
+  background-color: var(--bg);
+  border: 1px solid var(--border-muted);
+  border-left: 5px solid var(--secondary); /* Blue */
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+.report-patient-header h2 {
+  margin-top: 0;
+  margin-bottom: 5px;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+.report-patient-header p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+.report-textarea {
+  width: 100%;
+  min-height: 400px;
+  padding: 15px;
+  box-sizing: border-box; 
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--bg-light);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.report-textarea::placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+}
+.submit-btn {
+  padding: 10px 15px;
+  background: var(--success-gradient);
+  color: var(--btn-text-dark);
+  border: 1px solid var(--success-dark);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+.submit-btn:hover { filter: brightness(1.1); }

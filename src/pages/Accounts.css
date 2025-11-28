@@ -1,0 +1,66 @@
+/* src/pages/Accounts.css */
+
+.accounts-list-container {
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.accounts-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.accounts-table th,
+.accounts-table td {
+  border-bottom: 1px solid var(--border-muted);
+  padding: 14px;
+  text-align: left;
+  color: var(--text);
+}
+
+.accounts-table th {
+  background-color: var(--bg);
+  font-weight: bold;
+  color: var(--text-muted);
+}
+
+.text-success { color: var(--success); }
+.text-danger { color: var(--danger); }
+
+/* Status Badges */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.status-PENDING { background-color: oklch(from var(--danger) l c h / 0.2); color: var(--danger); }
+.status-PARTIAL { background-color: oklch(from var(--warning) l c h / 0.2); color: var(--warning); }
+.status-PAID { background-color: oklch(from var(--success) l c h / 0.2); color: var(--success); }
+
+/* Buttons */
+.pay-btn {
+  padding: 6px 12px;
+  background-color: transparent;
+  border: 1px solid var(--success);
+  color: var(--success);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.pay-btn:hover {
+  background-color: var(--success);
+  color: white;
+}
+
+.payment-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

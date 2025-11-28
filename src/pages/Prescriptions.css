@@ -1,0 +1,268 @@
+/* src/pages/Prescriptions.css */
+
+.prescription-list-container {
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+/* --- Pagination Controls --- */
+.pagination-controls {
+  display: flex;
+  justify-content: flex-start; 
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px; 
+  padding: 10px 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--border-muted);
+}
+.pagination-controls .form-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0; 
+}
+.pagination-controls .form-group label {
+  margin-bottom: 0;
+  color: var(--text-muted);
+}
+.pagination-controls .form-group select {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--bg-light);
+  color: var(--text);
+}
+.pagination-controls .page-info {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  font-weight: bold;
+  flex-grow: 1;
+  text-align: center;
+}
+.pagination-controls .pagination-buttons { display: flex; gap: 10px; }
+.pagination-btn {
+  padding: 8px 12px;
+  background-color: transparent;
+  color: var(--secondary);
+  border: 1px solid var(--secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s, color 0.2s;
+}
+.pagination-btn:hover:not(:disabled) {
+  background-color: var(--secondary);
+  color: var(--btn-text-dark);
+}
+.pagination-btn:disabled {
+  color: var(--text-muted);
+  border-color: var(--border-muted);
+  cursor: not-allowed;
+}
+
+.list-section {
+  margin-top: 30px;
+}
+
+/* --- History Table --- */
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.history-table th,
+.history-table td {
+  border-bottom: 1px solid var(--border-muted);
+  padding: 16px;
+  text-align: left;
+  color: var(--text);
+}
+.history-table tr:last-child td {
+  border-bottom: none;
+}
+.history-table th {
+  background-color: var(--bg);
+  color: var(--text-muted);
+  font-weight: bold;
+}
+
+/* --- Status Badges --- */
+.status-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--btn-text-dark);
+}
+.status-PENDING { background-color: var(--warning); }
+.status-PAID { background-color: var(--info); }
+.status-DISPENSED { background-color: var(--success); }
+
+/* --- Patient Header --- */
+.prescription-patient-header {
+  background-color: var(--bg);
+  border: 1px solid var(--border-muted);
+  border-left: 5px solid var(--secondary); /* Use secondary color */
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+.prescription-patient-header h2 {
+  margin-top: 0;
+  margin-bottom: 5px;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+.prescription-patient-header p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+/* --- Prescription Form Styles --- */
+.prescription-form .form-section {
+  background: var(--bg-light);
+  border: 1px solid var(--border-muted);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+.prescription-form .form-section h3 {
+  margin-top: 0;
+  color: var(--text);
+}
+.add-item-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: flex-start;
+}
+.add-item-form .form-group {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 120px;
+}
+.add-item-form .form-group.notes {
+  flex-basis: 100%;
+}
+.add-item-form .form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--text-muted);
+}
+.add-item-form .form-group input {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--bg-light);
+  color: var(--text);
+  font-size: 1rem; /* Ensure inputs match */
+}
+
+/* "Add to Prescription" Button */
+.add-item-btn {
+  padding: 10px 15px;
+  background-color: transparent;
+  color: var(--secondary);
+  border: 1px solid var(--secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  height: min-content;
+  align-self: end; 
+  margin-bottom: 2px; 
+}
+.add-item-btn:hover {
+  background-color: var(--secondary);
+  color: var(--btn-text-dark);
+}
+
+/* "Submit Full Prescription" Button */
+.submit-btn {
+  padding: 10px 15px;
+  background: var(--success-gradient);
+  color: var(--btn-text-dark);
+  border: 1px solid var(--success-dark);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+.submit-btn:hover { filter: brightness(1.1); }
+
+.submit-prescription-btn {
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 12px;
+}
+
+/* Autocomplete styles */
+.autocomplete-wrapper {
+  position: relative;
+  flex-grow: 1; 
+}
+.medicine-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0 0;
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px oklch(from var(--text) l c h / 0.1);
+}
+.suggestion-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  color: var(--text);
+  border-bottom: 1px solid var(--border-muted);
+}
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover { background-color: var(--bg); }
+.suggestion-item span {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  float: right;
+}
+
+/* Final prescription list */
+.prescription-item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.prescription-item-list li {
+  padding: 10px;
+  border-bottom: 1px solid var(--border-muted);
+  color: var(--text);
+}
+.prescription-item-list li:last-child {
+  border-bottom: none;
+}
+.prescription-item-list li strong {
+  color: var(--secondary); /* Use secondary color */
+}
+.prescription-item-list li em {
+  color: var(--text-muted);
+}
+
+.page-error {
+  color: var(--danger);
+  margin: 10px 0;
+  text-align: center;
+  background-color: oklch(from var(--danger) l c h / 0.1);
+  border: 1px solid oklch(from var(--danger) l c h / 0.3);
+  padding: 10px;
+  border-radius: 4px;
+}

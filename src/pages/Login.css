@@ -1,0 +1,71 @@
+/* src/pages/Login.css */
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--bg);
+  padding-top: 70px; 
+}
+
+.login-form {
+  background: var(--bg-light);
+  padding: 2.7rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 9px oklch(from var(--text) l c h / 0.05);
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-form h2 {
+  text-align: center;
+  color: var(--text);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.login-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  box-sizing: border-box;
+  background-color: var(--bg); /* Darker input background */
+  color: var(--text);
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary);
+  color: var(--bg-dark); /* Dark text on light button */
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.login-submit-btn:hover {
+  filter: brightness(0.8);
+}
+
+.login-error {
+  color: var(--danger);
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}

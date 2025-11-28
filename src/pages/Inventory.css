@@ -1,0 +1,181 @@
+/* src/pages/Inventory.css */
+
+.inventory-list-container {
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* Form inside the modal */
+.add-medicine-form-modal form {
+  display: flex;
+  flex-direction: column; 
+  gap: 15px;
+}
+.add-medicine-form-modal .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.add-medicine-form-modal .form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--text-muted);
+}
+.add-medicine-form-modal .form-group input {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--bg-light);
+  color: var(--text);
+}
+
+/* Header for the 'Add New Medicine' button */
+.inventory-header {
+  display: flex;
+  justify-content: flex-end; /* Aligns button to the right */
+  padding: 10px 0;
+  margin-bottom: 15px;
+}
+
+.edit-btn {
+  padding: 5px 10px;
+  background-color: transparent;
+  color: var(--secondary);
+  border: 1px solid var(--secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-right: 5px;
+  transition: background-color 0.2s, color 0.2s;
+}
+.edit-btn:hover {
+  background-color: var(--secondary);
+  color: var(--btn-text);
+}
+
+.delete-btn {
+  padding: 5px 10px;
+  background-color: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+.delete-btn:hover {
+  background-color: var(--danger);
+  color: var(--btn-text);
+}
+
+/* --- (MODIFIED) --- */
+/* Pagination Styles */
+.pagination-controls {
+  display: flex;
+  justify-content: flex-start; /* Aligns items to the start */
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px; /* Reduced gap between items */
+  padding: 10px 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--border-muted);
+  border-top: 1px solid var(--border-muted); 
+}
+/* --- (END MODIFICATION) --- */
+
+.pagination-controls .form-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 0; 
+}
+.pagination-controls .form-group label {
+  margin-bottom: 0;
+  color: var(--text-muted);
+}
+.pagination-controls .page-info {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  font-weight: bold;
+  /* --- (MODIFIED) --- */
+  flex-grow: 1; /* This will push the buttons to the right */
+  /* --- (END MODIFICATION) --- */
+  text-align: center;
+}
+.pagination-controls .pagination-buttons { display: flex; gap: 10px; }
+.pagination-btn {
+  padding: 5px 10px;
+  background-color: transparent;
+  color: var(--secondary);
+  border: 1px solid var(--secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s, color 0.2s;
+}
+.pagination-btn:hover:not(:disabled) {
+  background-color: var(--secondary);
+  color: var(--btn-text);
+}
+.pagination-btn:disabled {
+  color: var(--text-muted);
+  border-color: var(--border-muted);
+  cursor: not-allowed;
+}
+
+/* Edit form in modal */
+.edit-form .form-group { margin-bottom: 15px; }
+.edit-form .form-group input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Success message */
+.page-success {
+  background-color: oklch(from var(--success) l c h / 0.1);
+  color: var(--success);
+  padding: 10px;
+  border-radius: 6px;
+  margin: 20px auto;
+  border: 1px solid oklch(from var(--success) l c h / 0.3);
+}
+
+/* Submit button */
+.submit-btn {
+  padding: 10px 15px;
+  background: var(--success-gradient);
+  color: var(--btn-text-dark);
+  border: 1px solid var(--success-dark);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+.submit-btn:hover { filter: brightness(1.1); }
+
+/* Inventory Table Styles */
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.inventory-table th,
+.inventory-table td {
+  border-bottom: 1px solid var(--border-muted);
+  padding: 16px; 
+  text-align: left;
+  color: var(--text);
+}
+.inventory-table tr:last-child td {
+  border-bottom: none;
+}
+.inventory-table th {
+  background: var(--bg);
+  color: var(--text-muted); 
+  font-weight: bold;
+}
+.inventory-table .low-stock {
+  color: var(--danger);
+  font-weight: bold;
+}
+
