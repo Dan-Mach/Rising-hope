@@ -1,6 +1,6 @@
 
 {
-  "name": "pharmacy-frontend-app",
+  "name": "arising-hope",
   "compatibility_date": "2025-11-25",
   "assets": {
     "directory": "dist" // <--- This points to the compiled static files
