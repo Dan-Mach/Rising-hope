@@ -14,11 +14,11 @@
 
 .sidebar-collapsed .main-content {
   margin-left: 80px; 
-  width: calc(100% - 80px);
+  width: calc(90% - 80px);
 }
 
 .page-content {
-  max-width: 100%; 
+  max-width: 90%; 
   margin: 0;    
-  width: 100%;       
+  width: 90%;       
 }
