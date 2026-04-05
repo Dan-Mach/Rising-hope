@@ -11,7 +11,7 @@
   transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
-
+/* sidebar style */
 .sidebar-collapsed .main-content {
   margin-left: 80px; 
   width: calc(90% - 80px);
