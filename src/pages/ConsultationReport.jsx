@@ -37,6 +37,7 @@ function ConsultationReport() {
         
         setError(null);
       } catch (err) {
+        console.error(err);
         setError('Failed to load data.');
       } finally {
         setLoading(false);
@@ -57,14 +58,12 @@ function ConsultationReport() {
   const handleSaveAndPrescribe = async () => {
     setError(null);
     try {
-      // 1. Save Report
       await visitService.saveConsultationReport(visitId, {
         chief_complaint: complaint,
         consultation_notes: notes,
         pharmacy_notes: pharmacyNotes 
       });
 
-      // 2. Create Lab Requests (if any selected)
       if (selectedTests.length > 0) {
         // We create them sequentially or Promise.all
         const labPromises = selectedTests.map(testId => 
@@ -80,6 +79,7 @@ function ConsultationReport() {
       navigate(`/prescriptions?visit_id=${visitId}`);
       
     } catch (err) {
+      console.error(err);
       setError('Failed to save. Please try again.');
     }
   };
@@ -123,7 +123,6 @@ function ConsultationReport() {
             ))}
         </div>
       </div>
-      {/* ------------------------------ */}
       
       <div className="report-section" style={{ marginTop: '20px' }}>
         <h3>4. Pharmacy Notes</h3>

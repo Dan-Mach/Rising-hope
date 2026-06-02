@@ -38,7 +38,7 @@ function PatientRegistration() {
   const handleCreatePatient = async (e) => {
     e.preventDefault();
     
-    // ⚠️ CRITICAL: Structure payload for nested Name
+
     const dataToSend = {
       name: {
         first_name: newPatientData.first_name,
@@ -52,9 +52,9 @@ function PatientRegistration() {
     try {
       const res = await patientService.createPatient(dataToSend);
       setIsAddModalOpen(false); 
-      setNewPatientData({ first_name: '', second_name: '', age: '', gender: 'Male', phone_number }); 
+      setNewPatientData({ first_name: '', second_name: '', age: '', gender: 'Male', phone_number: '' }); 
       navigate(`/triage-assessment/${res.data.id}`); 
-    } catch (err) {
+    } catch {
       setFormError('Failed to create new patient.');
     }
   };
@@ -82,7 +82,6 @@ function PatientRegistration() {
             <ul className="search-results">
               {searchResults.map(p => (
                 <li key={p.id} onClick={() => navigate(`/triage-assessment/${p.id}`)}>
-                  {/* ⚠️ CRITICAL: Access nested Name */}
                   <span>{p.name?.first_name} {p.name?.second_name} (Age: {p.name?.age})</span>
                   <button type="button" className="submit-btn-small">Send to Triage</button>
                 </li>

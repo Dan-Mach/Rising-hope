@@ -47,6 +47,7 @@ function WardDashboard() {
       setPatients(admitted);
       setError(null);
     } catch (err) {
+      console.error(err);
       setError('Failed to load ward list.');
     } finally {
       setLoading(false);
@@ -73,7 +74,8 @@ function WardDashboard() {
       const res = await wardService.getWardLogs(visit.id);
       setPatientLogs(res.data.results || res.data);
     } catch (err) {
-      alert('Failed to fetch history.');
+        console.error(err);
+        alert('Failed to fetch history.');
     }
   };
 
@@ -109,6 +111,7 @@ function WardDashboard() {
       await wardService.dischargePatient(visit.id);
       fetchAdmittedPatients(); 
     } catch (err) {
+      console.error(err);
       alert('Discharge failed.');
     }
   };
@@ -116,7 +119,7 @@ function WardDashboard() {
   return (
     <div className="ward-page">
       <div className="ward-header">
-        <h2>🏥 In-Patient Ward Dashboard</h2>
+        <h2>In-Patient Ward Dashboard</h2>
         <button onClick={fetchAdmittedPatients} className="refresh-btn">↻ Refresh</button>
       </div>
 
