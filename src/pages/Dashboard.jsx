@@ -358,15 +358,15 @@ function Dashboard() {
         return (
           <>
             <div className="stat-card-container">
-              <div className="stat-card" style={{ borderLeftColor: '#1a4d8c' }}>
+              <div className="stat-card">
                 <h3>Total Patient Records</h3>
                 <p className="stat-number">{stats.patients}</p>
               </div>
-              <div className="stat-card" style={{ borderLeftColor: '#059669' }}>
+              <div className="stat-card" >
                 <h3>Total Active Staff</h3>
                 <p className="stat-number">{stats.staff}</p>
               </div>
-              <div className="stat-card" style={{ borderLeftColor: '#f59e0b' }}>
+              <div className="stat-card">
                 <h3>Medicine Stock Types</h3>
                 <p className="stat-number">{stats.medicines}</p>
               </div>

@@ -59,7 +59,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/">PHARMACY</Link>
+        <Link to="/">dimar</Link>
       </div>
       <div className="navbar-spacer">
         <h1 className="navbar-title">{getUserRole()} | {username}</h1>
