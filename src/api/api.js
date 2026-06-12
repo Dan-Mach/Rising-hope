@@ -1,13 +1,12 @@
 import axios from 'axios';
 
-// Fallback to local Django port if the environment variable isn't set
-const baseURL = import.meta.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api/v1';
+// Update this to point to your live worker endpoint
+const baseURL = import.meta.env.VITE_API_URL || 'https://arising.danreech83.workers.dev/api/v1';
 
 const api = axios.create({
   baseURL: baseURL,
 });
 
-// Automatically add the token to every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('authToken');
   if (token) {
