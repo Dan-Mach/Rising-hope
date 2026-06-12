@@ -91,7 +91,7 @@ function Prescriptions() {
       await prescriptionService.createPrescription(finalPrescription);
       setIsReviewOpen(false); 
       navigate('/triage-queue'); 
-    } catch (err) {
+    } catch {
       setIsReviewOpen(false);
       setError('Failed to send to pharmacy. Please check your permissions.');
     }
@@ -133,8 +133,6 @@ function Prescriptions() {
         </div>
       )}
 
-
-      {/* --- Review Modal --- */}
       {isReviewOpen && currentVisit && (
         <Modal onClose={() => setIsReviewOpen(false)} title="Review Prescription">
           <div className="review-modal-content">
@@ -163,7 +161,6 @@ function Prescriptions() {
         </Modal>
       )}
 
-      {/* --- History List --- */}
       <div className="form-section list-section">
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <h3>My Prescription History</h3>

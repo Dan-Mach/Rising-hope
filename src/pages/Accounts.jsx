@@ -37,6 +37,7 @@ function Accounts() {
       setTotalInvoices(res.data.count || 0);
       setError(null);
     } catch (err) {
+      console.error(err);
       setError('Failed to load invoices.');
     } finally {
       setLoading(false);
@@ -66,6 +67,7 @@ function Accounts() {
       setIsPaymentModalOpen(false);
       fetchInvoices(); // Refresh list
     } catch (err) {
+      console.error('Payment Failed:', err);
       alert('Payment Failed: ' + (err.response?.data?.detail || 'Check values'));
     }
   };

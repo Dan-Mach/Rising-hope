@@ -12,9 +12,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import './Dashboard.css';
 
-
-
-//1. NURSE DASHBOARD (In-Patient Ward) 
+// 1. NURSE DASHBOARD
 const NurseDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
@@ -43,7 +41,7 @@ const NurseDashboard = ({ stats, loading }) => (
   </div>
 );
 
-//2. LAB TECH DASHBOARD
+// 2. LAB TECH DASHBOARD
 const LabTechDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
@@ -85,17 +83,17 @@ const AccountantDashboard = ({ stats, loading }) => (
   </div>
 );
 
-//4. DOCTOR DASHBOARD
+//4. DOCTOR  DASHBOARDS 
 const DoctorDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
-      
+      <h3>Your Action Center</h3>
       <p className="text-gray-600 mb-4">Focus on the current patient flow and consultation needs.</p>
       
       <div style={{ marginTop: '20px' }}>
         <Link to="/triage-queue" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
           Go to Patient Queue &rarr;
-        </Link>
+        </Link>stats
       </div>
     </div>
     
@@ -141,8 +139,7 @@ const ChemistDashboard = ({ stats, loading }) => (
   </div>
 );
 
-
-//6. TRIAGE / RECEPTION DASHBOARD (Shared)
+// 6. TRIAGE / RECEPTION DASHBOARD 
 const TriageDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
@@ -171,7 +168,7 @@ const TriageDashboard = ({ stats, loading }) => (
   </div>
 );
 
-//7. STORE MANAGER DASHBOARD
+// 7. STORE MANAGER DASHBOARD
 const StoreManagerDashboard = ({ stats, lowStockMeds, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
@@ -207,10 +204,9 @@ const StoreManagerDashboard = ({ stats, lowStockMeds, loading }) => (
   </div>
 );
 
-// MAIN COMPONENT
 function Dashboard() {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   
   const [stats, setStats] = useState({
     patients: 0,
@@ -239,13 +235,11 @@ function Dashboard() {
 
     const loadAsyncData = async () => {
       setLoading(true);
-      
-      // Helper to update stats state safely
+
       const updateStat = (key, value) => {
         setStats(prev => ({ ...prev, [key]: value }));
       };
 
-      // Define all potential fetchers
       const promises = [];
 
       // 1. DOCTOR Stats
@@ -306,7 +300,7 @@ function Dashboard() {
         );
       }
 
-      // 7. ADMIN
+      // 7. ADMIN / MANAGER Stats 
       if (isAdminOrStoreManager) {
         // Inventory
         promises.push(
@@ -340,7 +334,6 @@ function Dashboard() {
         }
       }
 
-      // Execute all promises. 
       await Promise.allSettled(promises);
       setLoading(false);
     };
@@ -348,7 +341,7 @@ function Dashboard() {
     loadAsyncData();
   }, [role]);
   
-  // Helper function to render dashboard content (Same as before)
+
   const renderDashboardContent = () => {
     if (loading) return <h2>Loading {role.replace('_', ' ')} Dashboard...</h2>;
     

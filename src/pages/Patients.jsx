@@ -32,7 +32,7 @@ function Patients() {
       setPatients(response.data.results || response.data || []);
       setTotalPatients(response.data.count || 0);
       setError(null);
-    } catch (err) {
+    } catch{
       setError('Failed to fetch patients. Your session may be expired.');
     } finally {
       setLoading(false);
@@ -69,7 +69,7 @@ function Patients() {
       setSuccessMessage(`Patient registered successfully.`);
       setIsAddModalOpen(false); 
       fetchPatients();
-    } catch (err) {
+    } catch {
       setFormError('Failed to create patient. Check the details.');
     }
   };
@@ -89,7 +89,7 @@ function Patients() {
       await patientService.deletePatient(id);
       setSuccessMessage(`Patient deleted successfully.`);
       fetchPatients();
-    } catch (err) {
+    } catch {
       setError('Failed to delete patient record.');
     }
   };
