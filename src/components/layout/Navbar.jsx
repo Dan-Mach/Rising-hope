@@ -22,11 +22,11 @@ function Navbar() {
   // Helper to get Profile Picture
   // Adjust 'profile_picture' based on how your serializer returns it (e.g. nested in employee object)
   const getProfilePic = () => {
-    // 1. Try direct profile picture
+
     if (user?.profile_picture) return user.profile_picture;
-    // 2. Try nested employee profile picture
+    
     if (user?.employee?.profile_picture) return user.employee.profile_picture;
-    // 3. Try nested user object
+
     if (user?.user?.profile_picture) return user.user.profile_picture;
     
     return null;
@@ -61,7 +61,9 @@ function Navbar() {
       <div className="navbar-brand">
         <Link to="/">PHARMACY</Link>
       </div>
-
+      <div className="navbar-spacer">
+        <h1 className="navbar-title">{getUserRole()} | {username}</h1>
+      </div>
       <ul className="navbar-links">
         <li>
           <button onClick={toggleTheme} className="theme-toggle-btn" title="Toggle Theme">
@@ -72,7 +74,6 @@ function Navbar() {
         <li ref={dropdownRef} className="navbar-profile">
           <button onClick={toggleDropdown} className="profile-trigger" title={username}>
             
-            {/* LOGIC: Show Image if exists, else show Initials Placeholder */}
             {profilePicUrl ? (
               <img 
                 src={profilePicUrl.startsWith('http') ? profilePicUrl : `http://127.0.0.1:8000${profilePicUrl}`} 
@@ -107,5 +108,4 @@ function Navbar() {
     </nav>
   );
 }
-
 export default Navbar;

@@ -14,12 +14,11 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
 
   // Access nested 'user' object for role safely
   const role = user?.user?.employee_type;
-  const username = user?.user?.username;
 
   // Safety Check
   if (!role) return null;
 
-  const displayRole = role.replace('_', ' ');
+ 
 
   return (
     <nav className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
@@ -28,13 +27,6 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
             {isCollapsed ? '❯' : '❮'}
          </button>
       </div>
-
-      {!isCollapsed && (
-        <div className="sidebar-brand">
-          <h3>{displayRole}</h3>
-          <p>{username}</p>
-        </div>
-      )}
 
       <ul className="sidebar-nav">
         <li>
