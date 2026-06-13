@@ -12,10 +12,11 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import './Dashboard.css';
 
+// 1. NURSE DASHBOARD
 const NurseDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
-      <h3>🏥 Ward Overview</h3>
+      <h3>Ward Overview</h3>
       <p className="text-gray-600 mb-4">Monitor admitted patients and nursing rounds.</p>
       <div className="stat-card-container">
         <div className="stat-card" style={{ borderLeftColor: '#10b981', minWidth: 'auto' }}>
@@ -31,7 +32,7 @@ const NurseDashboard = ({ stats, loading }) => (
     </div>
     
     <div className="dashboard-list-card">
-      <h3>📝 Quick Actions</h3>
+      <h3>Quick Actions</h3>
       <ul className="dashboard-list">
         <li><Link to="/triage-queue">Triage Queue (New Admissions)</Link></li>
         <li><Link to="/ward">Log Vitals / Rounds</Link></li>
@@ -40,11 +41,11 @@ const NurseDashboard = ({ stats, loading }) => (
   </div>
 );
 
-// --- 2. LAB TECH DASHBOARD ---
+// 2. LAB TECH DASHBOARD
 const LabTechDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
-      <h3>🔬 Laboratory Queue</h3>
+      <h3>Laboratory Queue</h3>
       <p className="text-gray-600 mb-4">Pending tests requiring analysis.</p>
       <div className="stat-card-container">
         <div className="stat-card" style={{ borderLeftColor: '#8b5cf6', minWidth: 'auto' }}>
@@ -61,11 +62,11 @@ const LabTechDashboard = ({ stats, loading }) => (
   </div>
 );
 
-// --- 3. ACCOUNTANT DASHBOARD ---
+//3. ACCOUNTANT DASHBOARD 
 const AccountantDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
-      <h3>💰 Accounts & Billing</h3>
+      <h3>Accounts & Billing</h3>
       <p className="text-gray-600 mb-4">Outstanding invoices and payment processing.</p>
       <div className="stat-card-container">
         <div className="stat-card" style={{ borderLeftColor: '#f59e0b', minWidth: 'auto' }}>
@@ -82,27 +83,22 @@ const AccountantDashboard = ({ stats, loading }) => (
   </div>
 );
 
-// --- EXISTING DASHBOARDS ---
+//4. DOCTOR  DASHBOARDS 
 const DoctorDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
-      <h3>👨‍⚕️ Your Action Center</h3>
+      <h3>Your Action Center</h3>
       <p className="text-gray-600 mb-4">Focus on the current patient flow and consultation needs.</p>
-      <div className="stat-card-container">
-        <div className="stat-card" style={{ borderLeftColor: '#3b82f6', minWidth: 'auto' }}>
-          <h3>Patients Waiting</h3>
-          <p className="stat-number">{loading ? '...' : stats.waitingPatients}</p>
-        </div>
-      </div>
+      
       <div style={{ marginTop: '20px' }}>
         <Link to="/triage-queue" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
           Go to Patient Queue &rarr;
-        </Link>
+        </Link>stats
       </div>
     </div>
     
     <div className="dashboard-list-card">
-      <h3>✍️ Quick Links</h3>
+      <h3>Quick Links</h3>
       <ul className="dashboard-list">
         <li>
             <Link to="/triage-queue">Start New Consultation</Link>
@@ -118,10 +114,11 @@ const DoctorDashboard = ({ stats, loading }) => (
   </div>
 );
 
+//5. CHEMIST DASHBOARD
 const ChemistDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
-      <h3> Pharmacy Queue</h3>
+      <h3>Pharmacy Queue</h3>
       <p className="text-gray-600 mb-4">Immediate tasks for dispensing prescriptions.</p>
       <div className="stat-card-container">
         <div className="stat-card" style={{ borderLeftColor: '#f59e0b', minWidth: 'auto' }}>
@@ -142,10 +139,11 @@ const ChemistDashboard = ({ stats, loading }) => (
   </div>
 );
 
+// 6. TRIAGE / RECEPTION DASHBOARD 
 const TriageDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
-      <h3>🩺 Patient Check-in Status</h3>
+      <h3>Patient Check-in Status</h3>
       <p className="text-gray-600 mb-4">View the current status of the intake process.</p>
       <div className="stat-card-container">
         <div className="stat-card" style={{ borderLeftColor: '#3b82f6', minWidth: 'auto' }}>
@@ -161,7 +159,7 @@ const TriageDashboard = ({ stats, loading }) => (
 
     </div>
     <div className="dashboard-list-card">
-      <h3>⏱️ Queue Overview</h3>
+      <h3>Queue Overview</h3>
       <ul className="dashboard-list">
         <li><Link to="/triage-queue">View Full Queue Details</Link></li>
         <li>Patients Waiting for Doctor: {loading ? '...' : stats.waitingPatients}</li>
@@ -170,10 +168,11 @@ const TriageDashboard = ({ stats, loading }) => (
   </div>
 );
 
+// 7. STORE MANAGER DASHBOARD
 const StoreManagerDashboard = ({ stats, lowStockMeds, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
-      <h3>⚠️ Critical Stock Alerts</h3>
+      <h3>Critical Stock Alerts</h3>
       <p className="text-gray-600 mb-4">Immediate attention required for low inventory items.</p>
       <div className="stat-card-container">
         <div className="stat-card low-stock-card" style={{ borderLeftColor: '#ef4444', minWidth: 'auto' }}>
@@ -205,10 +204,9 @@ const StoreManagerDashboard = ({ stats, lowStockMeds, loading }) => (
   </div>
 );
 
-// --- MAIN COMPONENT (REFACTORED) ---
 function Dashboard() {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   
   const [stats, setStats] = useState({
     patients: 0,
@@ -237,13 +235,11 @@ function Dashboard() {
 
     const loadAsyncData = async () => {
       setLoading(true);
-      
-      // Helper to update stats state safely
+
       const updateStat = (key, value) => {
         setStats(prev => ({ ...prev, [key]: value }));
       };
 
-      // Define all potential fetchers. We will call them INDEPENDENTLY.
       const promises = [];
 
       // 1. DOCTOR Stats
@@ -304,7 +300,7 @@ function Dashboard() {
         );
       }
 
-      // 7. ADMIN / MANAGER Stats (Complex, multiple calls)
+      // 7. ADMIN / MANAGER Stats 
       if (isAdminOrStoreManager) {
         // Inventory
         promises.push(
@@ -338,8 +334,6 @@ function Dashboard() {
         }
       }
 
-      // Execute all promises. 
-      // Promise.allSettled waits for all to finish, regardless of success/fail.
       await Promise.allSettled(promises);
       setLoading(false);
     };
@@ -347,7 +341,7 @@ function Dashboard() {
     loadAsyncData();
   }, [role]);
   
-  // Helper function to render dashboard content (Same as before)
+
   const renderDashboardContent = () => {
     if (loading) return <h2>Loading {role.replace('_', ' ')} Dashboard...</h2>;
     
@@ -364,15 +358,15 @@ function Dashboard() {
         return (
           <>
             <div className="stat-card-container">
-              <div className="stat-card" style={{ borderLeftColor: '#1a4d8c' }}>
+              <div className="stat-card">
                 <h3>Total Patient Records</h3>
                 <p className="stat-number">{stats.patients}</p>
               </div>
-              <div className="stat-card" style={{ borderLeftColor: '#059669' }}>
+              <div className="stat-card" >
                 <h3>Total Active Staff</h3>
                 <p className="stat-number">{stats.staff}</p>
               </div>
-              <div className="stat-card" style={{ borderLeftColor: '#f59e0b' }}>
+              <div className="stat-card">
                 <h3>Medicine Stock Types</h3>
                 <p className="stat-number">{stats.medicines}</p>
               </div>
@@ -419,7 +413,7 @@ function Dashboard() {
 
   return (
     <div className="dashboard-page">
-      <h2>📊 {role ? `${role.replace('_', ' ')} Dashboard` : 'Dashboard'}</h2>
+      <h2>{role ? `${role.replace('_', ' ')} Dashboard` : 'Dashboard'}</h2>
       {error && <p className="page-error">{error}</p>}
       {renderDashboardContent()}
     </div>

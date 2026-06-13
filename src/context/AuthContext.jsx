@@ -15,7 +15,8 @@ export const AuthProvider = ({ children }) => {
         try {
           const response = await userService.getMe();
           setUser(response.data); 
-        } catch (error) {
+        } catch (err) {
+          console.error('Failed to fetch user on load', err);
           authService.logout(); 
           setToken(null);
         }
@@ -33,9 +34,9 @@ export const AuthProvider = ({ children }) => {
       const response = await userService.getMe();
       setUser(response.data); 
 
-    } catch (error) {
-      console.error('Failed to login', error);
-      throw error; 
+    } catch (err) {
+      console.error('Failed to login', err);
+      throw err; 
     }
   };
 

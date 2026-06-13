@@ -32,6 +32,7 @@ function TriageQueue() {
       setTotalVisits(res.data.count || 0);
       setError(null);
     } catch (err) {
+      console.error(err);
       setError('Failed to load patient queue.');
     } finally {
       setLoading(false);

@@ -81,12 +81,10 @@
 
 .stat-card {
   background-color: var(--bg-light);
-  border: 1px solid var(--border-muted);
   border-left-width: 5px; 
   border-radius: 8px;
   padding: 20px;
   flex: 1;
-  box-shadow: 0 2px 4px oklch(from var(--text) l c h / 0.05);
 }
 
 .stat-card h3 {

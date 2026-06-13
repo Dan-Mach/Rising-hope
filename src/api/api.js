@@ -1,10 +1,12 @@
 import axios from 'axios';
 
+// Update this to point to your live worker endpoint
+const baseURL = import.meta.env.VITE_API_URL || 'https://arising.danreech83.workers.dev/api/v1';
+
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/v1',
+  baseURL: baseURL,
 });
 
-// Automatically add the token to every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('authToken');
   if (token) {

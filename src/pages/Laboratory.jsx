@@ -38,7 +38,7 @@ function Laboratory() {
       const res = await labService.getTestRequests(1, 50, ''); 
       setRequests(res.data.results || []);
       setError(null);
-    } catch (err) {
+    } catch {
       setError('Failed to load lab requests.');
     } finally {
       setLoading(false);
@@ -51,7 +51,7 @@ function Laboratory() {
       const res = await labService.getAvailableTests();
       setAvailableTests(res.data.results || res.data || []);
       setError(null);
-    } catch (err) {
+    } catch {
       setError('Failed to load test catalog.');
     } finally {
       setLoading(false);
@@ -65,7 +65,7 @@ function Laboratory() {
       setNewTest({ name: '', price: '', description: '' });
       setIsAddTestModalOpen(false);
       fetchCatalog();
-    } catch (err) {
+    } catch  {
       alert('Failed to create test.');
     }
   };
@@ -75,7 +75,7 @@ function Laboratory() {
     try {
       await labService.deleteLabTest(id);
       fetchCatalog();
-    } catch (err) {
+    } catch {
       alert("Cannot delete test (it may be in use).");
     }
   };
@@ -87,7 +87,7 @@ function Laboratory() {
       await labService.completeTest(selectedRequest.id, resultNotes);
       setIsResultModalOpen(false);
       fetchRequests();
-    } catch (err) {
+    } catch {
       alert("Failed to save results.");
     }
   };

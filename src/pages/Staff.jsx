@@ -32,7 +32,7 @@ function Staff() {
       setEmployees(response.data.results || []);
       setTotalEmployees(response.data.count || 0);
       setError(null);
-    } catch (err) {
+    } catch  {
       setError('Failed to fetch staff.');
     } finally {
       setLoading(false);
@@ -78,25 +78,13 @@ function Staff() {
       setSuccessMessage(`Employee added successfully.`);
       setIsAddModalOpen(false);
       fetchStaff();
-    } catch (err) {
+    } catch  {
       setFormError('Failed to create employee. Username may be taken.');
     }
   };
   
   const handleDeleteRequest = (emp) => setDeleteConfirmation(emp);
   
-  const handleConfirmedDelete = async () => {
-    if (!deleteConfirmation) return;
-    try {
-      await userService.deleteEmployee(deleteConfirmation.id);
-      setSuccessMessage(`Employee deleted successfully.`);
-      fetchStaff();
-    } catch (err) {
-      setError('Failed to delete employee.');
-    }
-    setDeleteConfirmation(null);
-  };
-
   const totalPages = Math.ceil(totalEmployees / pageSize);
   const handlePageSizeChange = (e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); };
   const handleSortChange = (e) => { setSortOrder(e.target.value); setCurrentPage(1); };
