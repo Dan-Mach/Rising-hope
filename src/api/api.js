@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-// 1. Keep your base fallback URL matching your core API prefix path
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://dimar.pythonanywhere.com/api/v1';
+// 1. Grab your target endpoint from the environment or fall back safely
+const baseInput = import.meta.env.VITE_API_URL || 'https://dimar.pythonanywhere.com';
+
+// 2. Clear out any accidental dual slash handles, then firmly lock down the api/v1 suffix path
+const cleanBase = baseInput.replace(/\/$/, '');
+const API_BASE_URL = cleanBase.includes('/api/v1') ? `${cleanBase}/` : `${cleanBase}/api/v1/`;
 
 const api = axios.create({
-  // 2. CHANGE THIS LINE: Dynamically ensure a trailing slash is ALWAYS appended 
-  // to the baseURL regardless of how VITE_API_URL is formatted in your .env file
-  baseURL: API_BASE_URL.endsWith('/') ? API_BASE_URL : `${API_BASE_URL}/`,
+  baseURL: API_BASE_URL, // Enforces exactly: 'https://dimar.pythonanywhere.com/api/v1/'
   headers: {
     'Content-Type': 'application/json',
   },
@@ -15,7 +17,7 @@ const api = axios.create({
 // Interceptor to automatically attach your authentication token to outgoing requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken'); 
+    const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Token ${token}`;
     }
