@@ -1,10 +1,12 @@
 import axios from 'axios';
 
-// Fall back to your live PythonAnywhere backend if the VITE environment variable isn't injected
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://dimar.pythonanywhere.com';
+// 1. Keep your base fallback URL matching your core API prefix path
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://dimar.pythonanywhere.com/api/v1';
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  // 2. CHANGE THIS LINE: Dynamically ensure a trailing slash is ALWAYS appended 
+  // to the baseURL regardless of how VITE_API_URL is formatted in your .env file
+  baseURL: API_BASE_URL.endsWith('/') ? API_BASE_URL : `${API_BASE_URL}/`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -13,7 +15,7 @@ const api = axios.create({
 // Interceptor to automatically attach your authentication token to outgoing requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken'); // or wherever you store your DRF token
+    const token = localStorage.getItem('authToken'); 
     if (token) {
       config.headers.Authorization = `Token ${token}`;
     }
