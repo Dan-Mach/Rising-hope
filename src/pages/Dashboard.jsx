@@ -12,11 +12,6 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import './Dashboard.css';
 
-// --- DASHBOARD WIDGET COMPONENTS (No changes needed here) ---
-// ... (Keep NurseDashboard, LabTechDashboard, AccountantDashboard, DoctorDashboard, etc. exactly as they were) ...
-// For brevity, I am not reposting the sub-components. Keep them as they are in your file.
-
-// --- 1. NURSE DASHBOARD (In-Patient Ward) ---
 const NurseDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
@@ -126,7 +121,7 @@ const DoctorDashboard = ({ stats, loading }) => (
 const ChemistDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
     <div className="dashboard-list-card">
-      <h3>💊 Pharmacy Queue</h3>
+      <h3> Pharmacy Queue</h3>
       <p className="text-gray-600 mb-4">Immediate tasks for dispensing prescriptions.</p>
       <div className="stat-card-container">
         <div className="stat-card" style={{ borderLeftColor: '#f59e0b', minWidth: 'auto' }}>
