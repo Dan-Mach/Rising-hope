@@ -101,7 +101,7 @@ function Laboratory() {
   return (
     <div className="lab-page">
       <div className="lab-header">
-        <h2>🔬 Laboratory Management</h2>
+        <h2> Laboratory Management</h2>
         <div className="lab-tabs">
             <button 
                 className={`tab-btn ${activeTab === 'queue' ? 'active' : ''}`} 

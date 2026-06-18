@@ -79,7 +79,7 @@ function Accounts() {
 
   return (
     <div className="accounts-page">
-      <h2>💰 Accounts & Billing</h2>
+      <h2> Accounts & Billing</h2>
       
       {success && <p className="page-success">{success}</p>}
       {error && <p className="page-error">{error}</p>}

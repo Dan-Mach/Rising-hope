@@ -102,7 +102,7 @@ function Patients() {
 
   return (
     <div className="patients-page">
-      <h2>👤 Patient Record Management</h2>
+      <h2> Patient Record Management</h2>
       
       {error && <p className="page-error">Error: {error}</p>}
       {successMessage && <p className="page-success">{successMessage}</p>}

@@ -93,7 +93,7 @@ function Staff() {
 
   return (
     <div className="staff-page">
-      <h2>🧑‍⚕️ Staff Management</h2>
+      <h2> Staff Management</h2>
       {successMessage && <p className="page-success">{successMessage}</p>}
 
       <div className="staff-header">

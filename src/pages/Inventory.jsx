@@ -128,7 +128,7 @@ function Inventory() {
   
   return (
     <div className="inventory-page">
-      <h2>📦 Inventory Stock Management</h2>
+      <h2> Inventory Stock Management</h2>
 
       {error && <p className="page-error">Error: {error}</p>}
       {successMessage && <p className="page-success">{successMessage}</p>}

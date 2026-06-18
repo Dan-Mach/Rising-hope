@@ -87,7 +87,7 @@ function TriageQueue() {
       <div className="triage-queue-container">
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px'}}>
             <div>
-                <h2>⚕️ Today's Consultation Queue</h2>
+                <h2>Today's Consultation Queue</h2>
                 <p className="triage-queue-subtitle">Queue prioritized by time (Pending Patients)</p>
             </div>
             <button onClick={fetchQueue} className="submit-btn" style={{padding: '8px 15px'}}>

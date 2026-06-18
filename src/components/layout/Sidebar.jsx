@@ -18,20 +18,20 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
   // Safety Check
   if (!role) return null;
 
- 
-
   return (
     <nav className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
          <button onClick={toggleSidebar} className="sidebar-toggle-btn" title="Toggle Sidebar">
-            {isCollapsed ? '❯' : '❮'}
+            <span className="material-icons">
+              {isCollapsed ? 'chevron_right' : 'chevron_left'}
+            </span>
          </button>
       </div>
 
       <ul className="sidebar-nav">
         <li>
           <NavLink to="/" title="Dashboard">
-            <span className="icon"></span>
+            <span className="material-icons icon">dashboard</span>
             {!isCollapsed && <span className="label">Dashboard</span>}
           </NavLink>
         </li>
@@ -41,26 +41,25 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           <>
             <li>
               <NavLink to="/triage-queue" title="Patient Queue">
-                <span className="icon"></span>
+                <span className="material-icons icon">groups</span>
                 {!isCollapsed && <span className="label">Patient Queue</span>}
               </NavLink>
             </li>
-            {/* Added Ward Link for Doctors */}
             <li>
               <NavLink to="/ward" title="In-Patient Ward">
-                 <span className="icon"></span>
+                 <span className="material-icons icon">hotel</span>
                  {!isCollapsed && <span className="label">In-Patient Ward</span>}
               </NavLink>
             </li>
             <li>
               <NavLink to="/prescriptions" end title="My Prescriptions">
-                 <span className="icon"></span>
+                 <span className="material-icons icon">description</span>
                  {!isCollapsed && <span className="label">My Prescriptions</span>}
               </NavLink>
             </li>
             <li>
               <NavLink to="/reports" title="View Reports">
-                 <span className="icon"></span>
+                 <span className="material-icons icon">assessment</span>
                  {!isCollapsed && <span className="label">View Reports</span>}
               </NavLink>
             </li>
@@ -71,7 +70,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
         {role === 'CHEMIST' && (
           <li>
             <NavLink to="/dispense" title="Dispense">
-              <span className="icon"></span>
+              <span className="material-icons icon">medication</span>
               {!isCollapsed && <span className="label">Dispense</span>}
             </NavLink>
           </li>
@@ -81,7 +80,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
         {role === 'RECEPTIONIST' && (
           <li>
             <NavLink to="/register" title="Registration">
-              <span className="icon"></span>
+              <span className="material-icons icon">how_to_reg</span>
               {!isCollapsed && <span className="label">Registration</span>}
             </NavLink>
           </li>
@@ -92,22 +91,21 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           <>
             <li>
               <NavLink to="/register" title="Registration">
-                <span className="icon"></span>
+                <span className="material-icons icon">how_to_reg</span>
                 {!isCollapsed && <span className="label">Registration</span>}
               </NavLink>
             </li>
             <li>
               <NavLink to="/triage-queue" title="Triage Queue">
-                 <span className="icon"></span>
+                 <span className="material-icons icon">queue</span>
                  {!isCollapsed && <span className="label">Triage Queue</span>}
               </NavLink>
             </li>
             
-            {/* Added Ward Link for Nurses (General Nurse) */}
             {role === 'NURSE' && (
               <li>
                 <NavLink to="/ward" title="In-Patient Ward">
-                   <span className="icon"></span>
+                   <span className="material-icons icon">hotel</span>
                    {!isCollapsed && <span className="label">In-Patient Ward</span>}
                 </NavLink>
               </li>
@@ -119,7 +117,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
         {role === 'ACCOUNTANT' && (
           <li>
             <NavLink to="/accounts" title="Accounts & Billing">
-               <span className="icon"></span>
+               <span className="material-icons icon">account_balance_wallet</span>
                {!isCollapsed && <span className="label">Billing</span>}
             </NavLink>
           </li>
@@ -129,7 +127,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
         {role === 'LAB_TECH' && (
           <li>
             <NavLink to="/lab" title="Laboratory">
-               <span className="icon"></span>
+               <span className="material-icons icon">biotech</span>
                {!isCollapsed && <span className="label">Laboratory</span>}
             </NavLink>
           </li>
@@ -140,31 +138,31 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           <>
             <li>
               <NavLink to="/staff" title="Staff Management">
-                <span className="icon"></span>
+                <span className="material-icons icon">badge</span>
                 {!isCollapsed && <span className="label">Staff Management</span>}
               </NavLink>
             </li>
             <li>
               <NavLink to="/patients" title="Patient Records">
-                <span className="icon"></span>
+                <span className="material-icons icon">assignment_ind</span>
                 {!isCollapsed && <span className="label">Patient Records</span>}
               </NavLink>
             </li>
             <li>
               <NavLink to="/ward" title="In-Patient Ward">
-                 <span className="icon"></span>
+                 <span className="material-icons icon">hotel</span>
                  {!isCollapsed && <span className="label">Ward Management</span>}
               </NavLink>
             </li>
             <li>
               <NavLink to="/inventory" title="Inventory">
-                 <span className="icon"></span>
+                 <span className="material-icons icon">inventory_2</span>
                  {!isCollapsed && <span className="label">Inventory</span>}
               </NavLink>
             </li>
             <li>
               <NavLink to="/accounts" title="Accounts">
-                 <span className="icon"></span>
+                 <span className="material-icons icon">account_balance_wallet</span>
                  {!isCollapsed && <span className="label">Billing</span>}
               </NavLink>
             </li>
@@ -176,7 +174,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           <>
             <li>
               <NavLink to="/inventory" title="Inventory">
-                 <span className="icon"></span>
+                 <span className="material-icons icon">inventory_2</span>
                  {!isCollapsed && <span className="label">Inventory</span>}
               </NavLink>
             </li>
@@ -187,19 +185,19 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
       <ul className="sidebar-footer">
         <li>
           <Link to="/profile" title="Edit Profile">
-             <span className="icon"></span>
+             <span className="material-icons icon">account_circle</span>
              {!isCollapsed && <span className="label">Edit Profile</span>}
           </Link>
         </li>
         <li>
           <Link to="/settings" title="Settings">
-             <span className="icon"></span>
+             <span className="material-icons icon">settings</span>
              {!isCollapsed && <span className="label">Settings</span>}
           </Link>
         </li>
         <li>
           <button onClick={handleLogout} className="logout-btn" title="Logout">
-             <span className="icon"></span>
+             <span className="material-icons icon">logout</span>
              {!isCollapsed && <span className="label">Logout</span>}
           </button>
         </li>

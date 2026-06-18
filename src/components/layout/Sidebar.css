@@ -32,13 +32,16 @@
 }
 
 .sidebar-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 1.2rem;
   cursor: pointer;
   padding: 5px;
 }
+
 .sidebar-toggle-btn:hover {
   color: var(--text);
 }
@@ -99,9 +102,11 @@
 
 
 .sidebar .icon {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   min-width: 30px; 
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sidebar .label {
