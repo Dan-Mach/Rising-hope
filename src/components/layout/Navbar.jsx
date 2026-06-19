@@ -62,7 +62,7 @@ function Navbar() {
         <Link to="/">dimar</Link>
       </div>
       <div className="navbar-spacer">
-        <h1 className="navbar-title">{getUserRole()} | {username}</h1>
+        <h1 className="navbar-title">{getUserRole()}</h1>
       </div>
       <ul className="navbar-links">
         <li>

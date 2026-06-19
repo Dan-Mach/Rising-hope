@@ -25,10 +25,7 @@ import WardDashboard from './pages/WardDashboard';
 function App() {
   return (
     <Routes>
-      {/* Public Route */}
       <Route path="/login" element={<Login />} />
-
-      {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
@@ -37,14 +34,9 @@ function App() {
           <Route path="/staff" element={<Staff />} />
           <Route path="/prescriptions" element={<Prescriptions />} />
           <Route path="/dispense" element={<Dispense />} />
-          
           <Route path="/register" element={<PatientRegistration />} />
           <Route path="/triage-queue" element={<TriageQueue />} />
-          
-          {/* --- (MODIFIED) Renamed Route to avoid conflict --- */}
           <Route path="/triage-assessment/:patientId" element={<TriageForm />} />
-          {/* --- (END MODIFICATION) --- */}
-          
           <Route path="/profile" element={<EditProfile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/report/:visitId" element={<ConsultationReport />} />
@@ -54,8 +46,6 @@ function App() {
           <Route path="/ward" element={<WardDashboard />} />
         </Route>
       </Route>
-
-      {/* Catch-all 404 Route */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
