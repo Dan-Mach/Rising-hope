@@ -9,7 +9,7 @@ import { wardService } from '../api/wardService';
 import { labService } from '../api/labService';
 import { accountService } from '../api/accountService';
 import { useAuth } from '../hooks/useAuth'; 
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './Dashboard.css';
 
 // 1. NURSE DASHBOARD
@@ -171,6 +171,20 @@ const TriageDashboard = ({ stats, loading }) => (
 // 7. STORE MANAGER DASHBOARD
 const StoreManagerDashboard = ({ stats, lowStockMeds, loading }) => (
   <div className="dashboard-lists">
+    <div className={`dashboard-list-card ${stats}`}>
+        <h3>Inventory Overview Statistics</h3>
+        <p className="text-gray-600 mb-4">Quick overview of medicine statistics.</p>
+        <div className="stat-card-container">
+          <div className="stat-card" style={{ borderLeftColor: '#10b981', minWidth: 'auto' }}>
+            <h3>Total Medicines</h3>
+            <p className="stat-number">{loading ? '...' : stats.medicines}</p>
+          </div>
+          <div className="stat-card" style={{ borderLeftColor: '#ef4444', minWidth: 'auto' }}>
+            <h3>Expired </h3>
+            <p className="stat-number">{loading ? '...' : (stats.expiredMeds ?? 0)}</p>
+          </div>
+        </div>
+    </div>
     <div className="dashboard-list-card">
       <h3>Critical Stock Alerts</h3>
       <p className="text-gray-600 mb-4">Immediate attention required for low inventory items.</p>
@@ -225,7 +239,7 @@ function Dashboard() {
   const [lowStockMeds, setLowStockMeds] = useState([]);
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // Global error
+  const [error] = useState(null); // Global error
 
   const role = user?.user?.employee_type;
   const isAdminOrStoreManager = role === 'ADMIN' || role === 'STORE_MANAGER';
@@ -339,7 +353,7 @@ function Dashboard() {
     };
 
     loadAsyncData();
-  }, [role]);
+  }, [role, isAdminOrStoreManager]);
   
 
   const renderDashboardContent = () => {

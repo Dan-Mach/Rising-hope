@@ -1,14 +1,9 @@
-/* src/components/layout/Layout.css */
 
 .main-content {
   margin-left: 240px; 
-  margin-top: 60px; /* Positions element structurally below the 60px fixed Navbar */
+  margin-top: 60px; 
   box-sizing: border-box;
-  
-  /* --- FIX OVERFLOW HERE --- */
-  /* Subtract the 60px navbar height from the viewport height to prevent page bleeding */
   min-height: calc(100vh - 60px); 
-  
   padding: 40px; 
   width: calc(100% - 240px); 
   background-color: var(--bg-dark); 
@@ -16,14 +11,13 @@
   transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
-/* Sidebar collapsed layouts */
 .sidebar-collapsed .main-content {
   margin-left: 80px; 
-  width: calc(100% - 80px); /* Replaced 90% with 100% to fill screen real-estate neatly */
+  width: calc(100% - 80px); 
 }
 
 .page-content {
-  max-width: 100%; /* Replaced 90% with 100% to let your dashboard grids align edge-to-edge */
+  max-width: 100%; 
   margin: 0;    
   width: 100%;       
 }
