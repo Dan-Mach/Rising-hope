@@ -22,4 +22,16 @@ body {
 #root {
   margin: 0;
   text-align: center;
+  min-width: 900px;
+}
+
+/* --- LAYOUT FIX FOR FIXED NAVBAR --- */
+.main-content {
+  /* Pushes content exactly down below the 60px fixed Navbar */
+  padding-top: 60px; 
+  min-height: 100vh;
+  box-sizing: border-box;
+  
+  /* Text alignment fix (overrides #root text-align: center) */
+  text-align: left; 
 }
