@@ -351,7 +351,7 @@ function Dashboard() {
       case 'TRIAGE': return <TriageDashboard stats={stats} loading={loading} />;
       case 'RECEPTIONIST': return <TriageDashboard stats={stats} loading={loading} />;
       case 'NURSE': return <NurseDashboard stats={stats} loading={loading} />;
-      case 'LAB_TECH': return <LabTechDashboard stats={stats} loading={loading} />;
+      case 'LAB TECH': return <LabTechDashboard stats={stats} loading={loading} />;
       case 'ACCOUNTANT': return <AccountantDashboard stats={stats} loading={loading} />;
       case 'STORE_MANAGER': return <StoreManagerDashboard stats={stats} lowStockMeds={lowStockMeds} loading={loading} />;
       case 'ADMIN':

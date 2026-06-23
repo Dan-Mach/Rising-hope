@@ -53,10 +53,12 @@ function Login() {
         </div>
         
         <button type="submit" className="login-submit-btn">Login</button>
-
+       
         {error && <p className="login-error">{error}</p>}
-      </form>
+      </form>  
+      <footer className="login-footer"><p>© 2024 Pharmacy Management System</p></footer>   
     </div>
+    
   );
 }
 export default Login;

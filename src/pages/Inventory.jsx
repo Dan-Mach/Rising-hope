@@ -1,5 +1,5 @@
 // src/pages/Inventory.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { inventoryService } from '../api/inventoryService';
 import Modal from '../components/common/Modal';
 import './Inventory.css';
@@ -23,7 +23,7 @@ function Inventory() {
   const [totalMedicines, setTotalMedicines] = useState(0);
   const [sortOrder, setSortOrder] = useState('name'); 
 
-  const fetchMedicines = async () => {
+  const fetchMedicines = useCallback(async () => {
     try {
       setLoading(true);
       const response = await inventoryService.getAllMedicines(currentPage, pageSize, sortOrder);
@@ -35,15 +35,15 @@ function Inventory() {
       setTotalMedicines(totalCount);
       setError(null);
     } catch (err) {
-      setError('Failed to fetch inventory. Your session may be expired.');
+      setError('Failed to fetch inventory. Your session may be expired.', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, pageSize, sortOrder]);
 
   useEffect(() => {
     fetchMedicines();
-  }, [currentPage, pageSize, sortOrder]);
+  }, [fetchMedicines]);
 
   // ... (handleFormChange, handleSubmit, etc. remain the same) ...
   const handleFormChange = (e) => {
@@ -62,7 +62,7 @@ function Inventory() {
       fetchMedicines();
       setIsAddModalOpen(false); 
     } catch (err) {
-      setFormError('Failed to create medicine. Check details or name duplication.');
+      setFormError('Failed to create medicine. Check details or name duplication.', err);
     }
   };
 
@@ -81,7 +81,7 @@ function Inventory() {
       setSuccessMessage(`Medicine (ID: ${id}) deleted successfully.`);
       fetchMedicines();
     } catch (err) {
-      setError('Failed to delete medicine.');
+      setError('Failed to delete medicine.', err);
     }
   };
 
@@ -112,7 +112,7 @@ function Inventory() {
       setSuccessMessage(`Medicine "${response.data.name}" updated successfully.`);
       fetchMedicines();
     } catch (err) {
-      setEditFormError('Failed to update medicine. Check the input values.');
+      setEditFormError('Failed to update medicine. Check the input values.', err);
     }
   };
 
@@ -128,7 +128,7 @@ function Inventory() {
   
   return (
     <div className="inventory-page">
-      <h2> Inventory Stock Management</h2>
+      <h2> Products</h2>
 
       {error && <p className="page-error">Error: {error}</p>}
       {successMessage && <p className="page-success">{successMessage}</p>}

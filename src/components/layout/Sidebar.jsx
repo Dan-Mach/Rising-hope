@@ -1,16 +1,10 @@
 import React from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import './Sidebar.css'; 
 
 function Sidebar({ isCollapsed, toggleSidebar }) {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const { user,  } = useAuth();
 
   // Access nested 'user' object for role safely
   const role = user?.user?.employee_type;
@@ -180,27 +174,6 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
             </li>
           </>
         )}
-      </ul>
-      
-      <ul className="sidebar-footer">
-        <li>
-          <Link to="/profile" title="Edit Profile">
-             <span className="material-icons icon">account_circle</span>
-             {!isCollapsed && <span className="label">Edit Profile</span>}
-          </Link>
-        </li>
-        <li>
-          <Link to="/settings" title="Settings">
-             <span className="material-icons icon">settings</span>
-             {!isCollapsed && <span className="label">Settings</span>}
-          </Link>
-        </li>
-        <li>
-          <button onClick={handleLogout} className="logout-btn" title="Logout">
-             <span className="material-icons icon">logout</span>
-             {!isCollapsed && <span className="label">Logout</span>}
-          </button>
-        </li>
       </ul>
     </nav>
   );

@@ -61,7 +61,7 @@ function Prescriptions() {
       setMyPrescriptions(presRes.data.results || []);
       setHistoryTotal(presRes.data.count || 0);
     } catch (err) {
-      if (!currentVisit && !error) setError('Failed to load prescription history.');
+      if (!currentVisit && !err) setError('Failed to load prescription history.');
     } finally {
       setLoadingHistory(false);
     }

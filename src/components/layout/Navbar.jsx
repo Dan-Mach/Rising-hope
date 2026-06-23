@@ -5,30 +5,51 @@ import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../context/ThemeContext';
 import './Navbar.css';
 
-// Default placeholder image (you can use a local file or this generic URL)
-const DEFAULT_AVATAR = "https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=";
-
 function Navbar() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [isFocused, setIsFocused] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Helper to safely get data
+  const searchHints = [
+    "Search for data, or files...",
+    "Try searching for records...",
+    "Search assets or clients...",
+    "Press '/' to focus search..."
+  ];
+
+  useEffect(() => {
+    if (isFocused || searchQuery) return;
+
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prevIndex) => (prevIndex + 1) % searchHints.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isFocused, searchQuery]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === '/' && document.activeElement !== document.querySelector('.navbar-search-input')) {
+        e.preventDefault();
+        document.querySelector('.navbar-search-input')?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const getUserRole = () => user?.employee_type || user?.user?.employee_type || '';
   const getUsername = () => user?.username || user?.user?.username || 'User';
   
-  // Helper to get Profile Picture
-  // Adjust 'profile_picture' based on how your serializer returns it (e.g. nested in employee object)
   const getProfilePic = () => {
-
     if (user?.profile_picture) return user.profile_picture;
-    
     if (user?.employee?.profile_picture) return user.employee.profile_picture;
-
     if (user?.user?.profile_picture) return user.user.profile_picture;
-    
     return null;
   };
 
@@ -61,9 +82,22 @@ function Navbar() {
       <div className="navbar-brand">
         <Link to="/">dimar</Link>
       </div>
-      <div className="navbar-spacer">
-        <h1 className="navbar-title">{getUserRole()}</h1>
+
+      {/* Styled Search Wrapper */}
+      <div className="navbar-search-container">
+        <span className="material-symbols-outlined search-icon">search</span>
+        <input 
+          type="text" 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder={isFocused ? "Type to search..." : searchHints[placeholderIndex]} 
+          className="navbar-search-input" 
+        />
+        {!isFocused && !searchQuery && <kbd className="search-shortcut-key">/</kbd>}
       </div>
+
       <ul className="navbar-links">
         <li>
           <button onClick={toggleTheme} className="theme-toggle-btn" title="Toggle Theme">
@@ -73,7 +107,6 @@ function Navbar() {
 
         <li ref={dropdownRef} className="navbar-profile">
           <button onClick={toggleDropdown} className="profile-trigger" title={username}>
-            
             {profilePicUrl ? (
               <img 
                 src={profilePicUrl.startsWith('http') ? profilePicUrl : `http://127.0.0.1:8000${profilePicUrl}`} 
@@ -85,7 +118,6 @@ function Navbar() {
                 {username.charAt(0).toUpperCase()}
               </div>
             )}
-            
             <span className="dropdown-arrow">▼</span>
           </button>
 
@@ -108,4 +140,5 @@ function Navbar() {
     </nav>
   );
 }
+
 export default Navbar;

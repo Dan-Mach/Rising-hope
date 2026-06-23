@@ -182,3 +182,73 @@
 .dropdown-logout-button:hover {
   background-color: #fee2e2 !important; /* Light red background on hover */
 }
+
+/* src/components/layout/Navbar.css */
+
+/* --- SEARCH BAR CONTAINER & THEMED INPUT --- */
+
+.navbar-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 20px;
+}
+
+/* Google Material Icons custom styling rules */
+.navbar-search-container .search-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 20px;
+  color: var(--text-muted); /* Leverages OKLCH theme token */
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.navbar-search-input {
+  width: 100%;
+  padding: 8px 38px 8px 40px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text);
+  background-color: oklch(from var(--text) l c h / 0.03); /* Subtle backdrop matching system mode */
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.navbar-search-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.65;
+  font-style: italic;
+}
+
+/* Interactive focus shifts */
+.navbar-search-input:focus {
+  background-color: var(--bg);
+  border-color: oklch(from var(--text) l c h / 0.4);
+  box-shadow: 0 0 0 3px oklch(from var(--text) l c h / 0.04);
+}
+
+.navbar-search-input:focus ~ .search-icon {
+  color: var(--text);
+  opacity: 0.9;
+}
+
+/* Developer-styled KBD block */
+.search-shortcut-key {
+  position: absolute;
+  right: 12px;
+  background-color: oklch(from var(--text) l c h / 0.06);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: var(--text-muted);
+  pointer-events: none;
+}
