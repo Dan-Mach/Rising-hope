@@ -1,6 +1,5 @@
 /* src/pages/Staff.css */
 
-/* --- (NEW) --- */
 .staff-list-container {
   background-color: var(--bg-light);
   border: 1px solid var(--border-muted);
@@ -8,21 +7,29 @@
   padding: 20px;
 }
 
-/* Form inside the modal */
+/* Form inside the modal transformed to a crisp landscape 2-column Grid layout */
 .add-employee-form-modal form {
-  display: flex;
-  flex-direction: column; 
-  gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Splits layout into 2 equal balanced columns */
+  gap: 1.25rem; /* Clean grid spacing */
 }
+
 .add-employee-form-modal .form-group {
   display: flex;
   flex-direction: column;
 }
+
+/* Utility to force specific elements like email, role, and buttons to look best full width */
+.add-employee-form-modal .span-two {
+  grid-column: span 2;
+}
+
 .add-employee-form-modal .form-group label {
   margin-bottom: 5px;
   font-weight: bold;
   color: var(--text-muted);
 }
+
 .add-employee-form-modal .form-group input,
 .add-employee-form-modal .form-group select {
   padding: 8px;
@@ -30,155 +37,59 @@
   border-radius: 4px;
   background-color: var(--bg-light);
   color: var(--text);
-}
-
-/* Header for the 'Add New Employee' button */
-.staff-header {
-  display: flex;
-  justify-content: flex-end; /* Aligns button to the right */
-  padding: 10px 0;
-  margin-bottom: 15px;
-}
-/* --- (END NEW) --- */
-
-
-/* Pagination Styles */
-.pagination-controls {
-  display: flex;
-  justify-content: flex-start; 
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px; 
-  padding: 10px 0;
-  margin-bottom: 15px;
-  border-bottom: 1px solid var(--border-muted);
-  border-top: 1px solid var(--border-muted); 
-}
-.pagination-controls .form-group {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 0; 
-}
-.pagination-controls .form-group label {
-  margin-bottom: 0;
-  color: var(--text-muted);
-}
-.pagination-controls .page-info {
-  color: var(--text-muted);
-  font-size: 0.9em;
-  font-weight: bold;
-  flex-grow: 1;
-  text-align: center;
-}
-.pagination-controls .pagination-buttons { display: flex; gap: 10px; }
-.pagination-btn {
-  padding: 8px 12px;
-  background-color: transparent;
-  color: var(--secondary);
-  border: 1px solid var(--secondary);
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s, color 0.2s;
-}
-.pagination-btn:hover:not(:disabled) {
-  background-color: var(--secondary);
-  color: var(--btn-text);
-}
-.pagination-btn:disabled {
-  color: var(--text-muted);
-  border-color: var(--border-muted);
-  cursor: not-allowed;
-}
-
-/* Staff Table */
-.staff-table {
   width: 100%;
-  border-collapse: collapse;
+  box-sizing: border-box;
 }
-.staff-table th,
-.staff-table td {
-  border-bottom: 1px solid var(--border-muted);
-  padding: 16px; 
-  text-align: left;
+
+/* Header Alignment Optimization */
+.staff-header-row {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;            
+  margin-bottom: 1.5rem;          
+  padding: 0.5rem 0;              
+}
+
+.staff-header-row h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
   color: var(--text);
 }
-.staff-table tr:last-child td {
-  border-bottom: none;
-}
+
+/* Table layout stylings */
 .staff-table th {
-  background: var(--bg);
-  color: var(--text-muted); 
-  font-weight: bold;
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 2px solid var(--border);
+  color: var(--text-muted);
 }
 
+.staff-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border-muted);
+}
 
-/* --- (MODIFIED) Button Styles --- */
-.submit-btn {
-  padding: 10px 15px;
-  background: var(--success-gradient);
-  color: var(--btn-text-dark);
-  border: 1px solid var(--success-dark);
+.role-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: oklch(from var(--text) l c h / 0.06);
+  color: var(--text);
   border-radius: 4px;
-  cursor: pointer;
-  transition: filter 0.2s;
-}
-.submit-btn:hover { filter: brightness(1.1); }
-
-.delete-btn {
-  padding: 5px 10px;
-  background-color: transparent;
-  color: var(--danger);
-  border: 1px solid var(--danger);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.2s, color 0.2s;
-}
-.delete-btn:hover {
-  background-color: var(--danger);
-  color: var(--btn-text-dark);
 }
 
-.edit-btn {
-  padding: 5px 10px;
-  background-color: transparent;
-  color: var(--secondary);
-  border: 1px solid var(--secondary);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.2s, color 0.2s;
-}
-.edit-btn:hover {
-  background-color: var(--secondary);
-  color: var(--btn-text-dark);
-}
-/* --- (END MODIFICATION) --- */
-
-
-/* Global Messages */
+/* Error/Success notifications layout states */
 .form-error,
 .page-error {
   color: var(--danger);
   margin: 10px 0;
-  width: 100%;
-}
-.page-success {
-  background-color: oklch(from var(--success) l c h / 0.1);
-  color: var(--success);
-  padding: 10px;
-  border-radius: 6px;
-  margin: 20px auto;
-  border: 1px solid oklch(from var(--success) l c h / 0.3);
+  font-weight: 500;
 }
 
-/* Modal styles for button alignment */
-.flex { display: flex; }
-.justify-center { justify-content: center; }
-.gap-4 { gap: 1rem; }
-.p-4 { padding: 1rem; }
-.border-t { border-top: 1px solid var(--border-muted); }
-.text-center { text-align: center; }
+.page-success {
+  color: #10b981;
+  margin: 10px 0;
+  font-weight: 500;
+}

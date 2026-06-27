@@ -1,15 +1,14 @@
 // src/pages/Staff.jsx
-// ... (Imports remain the same) ...
 import React, { useState, useEffect } from 'react';
 import { userService } from '../api/userService';
 import Modal from '../components/common/Modal';
+import Button from '../components/common/Button'; 
 import './Staff.css';
 
 function Staff() {
-  // ... (State variables remain the same) ...
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [ setError] = useState(null);
+  const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
   const [newEmployee, setNewEmployee] = useState({
@@ -25,189 +24,217 @@ function Staff() {
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [sortOrder, setSortOrder] = useState('user__name__first_name'); 
 
+  useEffect(() => {
+    fetchStaff();
+  }, [currentPage, pageSize, sortOrder]);
+
   const fetchStaff = async () => {
-     try {
+    try {
       setLoading(true);
       const response = await userService.getAllEmployees(currentPage, pageSize, sortOrder);
       setEmployees(response.data.results || []);
       setTotalEmployees(response.data.count || 0);
       setError(null);
-    } catch  {
-      setError('Failed to fetch staff.');
+    } catch (err) {
+      setError('Failed to fetch system employees registry records.');
     } finally {
       setLoading(false);
     }
   };
-  
-  useEffect(() => {
-    fetchStaff();
-  }, [currentPage, pageSize, sortOrder]);
 
-  // ... (handleFormChange, handleSubmit, etc. remain the same) ...
   const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setNewEmployee(prev => ({ ...prev, [name]: value }));
+    setNewEmployee({
+      ...newEmployee,
+      [e.target.name]: e.target.value
+    });
   };
 
-  const handleSubmit = async (e) => {
+  const handleAddEmployeeSubmit = async (e) => {
     e.preventDefault();
     setFormError(null);
-    
-    const payload = {
-      user: {
-        username: newEmployee.username,
-        password: newEmployee.password,
-        employee_type: newEmployee.employee_type,
-        name: {
-            first_name: newEmployee.first_name,
-            second_name: newEmployee.second_name,
-            age: newEmployee.age,
-            gender: newEmployee.gender,
-            phone_number: newEmployee.phone_number
-        }
-      },
-      email: newEmployee.email || `${newEmployee.username}@pharmacy.com`
-    };
-
     try {
-      await userService.createEmployee(payload);
+      await userService.createEmployee(newEmployee);
+      setSuccessMessage(`Employee account "${newEmployee.username}" provisioned successfully.`);
+      setIsAddModalOpen(false);
       setNewEmployee({
         username: '', password: '', first_name: '', second_name: '',
         age: '', gender: 'Male', phone_number: '', employee_type: 'DOCTOR', email: ''
       });
-      setSuccessMessage(`Employee added successfully.`);
-      setIsAddModalOpen(false);
       fetchStaff();
-    } catch  {
-      setFormError('Failed to create employee. Username may be taken.');
+    } catch (err) {
+      setFormError(err.response?.data?.detail || 'Validation failed. Check your inputs.');
     }
   };
-  
-  const handleDeleteRequest = (emp) => setDeleteConfirmation(emp);
-  
+
+  const handleDeleteClick = (employee) => {
+    setDeleteConfirmation(employee);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmation) return;
+    try {
+      await userService.deleteEmployee(deleteConfirmation.id);
+      setSuccessMessage('Employee record deactivated successfully.');
+      setDeleteConfirmation(null);
+      fetchStaff();
+    } catch (err) {
+      setError('Failed to terminate target user credentials profile.');
+    }
+  };
+
   const totalPages = Math.ceil(totalEmployees / pageSize);
-  const handlePageSizeChange = (e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); };
-  const handleSortChange = (e) => { setSortOrder(e.target.value); setCurrentPage(1); };
-  const handleNextPage = () => { if (currentPage < totalPages) setCurrentPage(currentPage + 1); };
-  const handlePrevPage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1); };
 
   return (
     <div className="staff-page">
-      <h2> Staff Management</h2>
-      {successMessage && <p className="page-success">{successMessage}</p>}
-
-      <div className="staff-header">
-        <button onClick={fetchStaff} className="edit-btn" style={{ marginRight: '10px' }}>
-           ↻ Refresh List
-        </button>
-        <button onClick={() => setIsAddModalOpen(true)} className="submit-btn">
+      <div className="staff-header-row">
+        <h2>Staff Management</h2>
+        <Button onClick={() => setIsAddModalOpen(true)} variant="submit">
           + Add New Employee
-        </button>
+        </Button>
       </div>
 
-      {/* ... (Table and Modals remain the same) ... */}
-      <div className="staff-list-container">
-        {/* Pagination and Table Code... */}
-        <div className="pagination-controls">
-          <div className="form-group sort-controls">
-            <label htmlFor="sortOrder">Sort by:</label>
-            <select id="sortOrder" value={sortOrder} onChange={handleSortChange}>
-              <option value="user__name__first_name">Name (A-Z)</option>
-              <option value="-user__name__first_name">Name (Z-A)</option>
-              <option value="-register_date">Date Registered (Newest)</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="pageSize">Items per page:</label>
-            <select id="pageSize" value={pageSize} onChange={handlePageSizeChange}>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-          </div>
-          <span className="page-info">
-            {totalPages > 1 ? `Page ${currentPage} of ${totalPages} | ` : ''}
-            {totalEmployees} total staff
-          </span>
-          <div className="pagination-buttons">
-            <button onClick={handlePrevPage} disabled={currentPage === 1} className="pagination-btn">&larr; Previous</button>
-            <button onClick={handleNextPage} disabled={currentPage === totalPages} className="pagination-btn">Next &rarr;</button>
-          </div>
-        </div>
-        
-        <table className="staff-table">
-          <thead>
-            <tr>
-              <th>Full Name</th>
-              <th>Role</th>
-              <th>Phone</th>
-              <th>Age/Gender</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!loading && employees.map((emp) => (
-              <tr key={emp.id}>
-                <td>{emp.user?.name?.first_name} {emp.user?.name?.second_name}</td>
-                <td>
-                    <span className={`role-${emp.user?.employee_type}`}>
-                        {emp.user?.employee_type?.replace('_', ' ')}
-                    </span>
-                </td>
-                <td>{emp.user?.name?.phone_number || 'N/A'}</td>
-                <td>
-                  {emp.user?.name?.age ? `${emp.user.name.age} yrs` : ''} 
-                  {emp.user?.name?.gender ? ` / ${emp.user.name.gender}` : ''}
-                </td>
-                <td>
-                  <button onClick={() => handleDeleteRequest(emp)} className="delete-btn">Delete</button>
-                </td>
+      {successMessage && <p className="page-success">{successMessage}</p>}
+      {error && <p className="page-error">{error}</p>}
+
+      {loading ? (
+        <p>Loading staff directories...</p>
+      ) : (
+        <div className="staff-list-container">
+          <table className="staff-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Role Designation</th>
+                <th>Phone</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {employees.length === 0 ? (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>No active team members registered.</td>
+                </tr>
+              ) : (
+                employees.map((emp) => {
+                  // Fallback fallback selector to catch employee_type regardless of API nesting structures
+                  const activeRole = emp.employee_type || emp.user?.employee_type || 'STAFF';
 
+                  return (
+                    <tr key={emp.id}>
+                      <td>{emp.user?.username || 'unknown'}</td>
+                      <td>
+                        <strong>
+                          {emp.user?.name?.first_name} {emp.user?.name?.second_name || ''}
+                        </strong>
+                      </td>
+                      <td>
+                        {/* Renders the verified fallback designation role text string safely */}
+                        <span className="role-badge">
+                          {activeRole.replace('_', ' ')}
+                        </span>
+                      </td>
+                      <td>{emp.user?.name?.phone_number || 'N/A'}</td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <Button variant="delete" onClick={() => handleDeleteClick(emp)} style={{ padding: '4px 8px', fontSize: '0.85rem' }}>
+                            Deactivate
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+
+          {totalPages > 1 && (
+            <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', gap: '5px', alignItems: 'center' }}>
+              <Button 
+                variant="edit"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
+              >
+                &larr; Previous
+              </Button>
+              <span>Page {currentPage} of {totalPages}</span>
+              <Button 
+                variant="edit"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
+              >
+                Next &rarr;
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {deleteConfirmation && (
+        <Modal onClose={() => setDeleteConfirmation(null)}>
+          <div style={{ padding: '10px' }}>
+            <h3>Confirm Credential Deactivation</h3>
+            <p style={{ margin: '15px 0' }}>
+              Are you sure you want to completely suspend clinical platform access permissions for{' '}
+              <strong>{deleteConfirmation.user?.username}</strong>? This workflow cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <Button onClick={confirmDelete} variant="delete">
+                Yes, Deactivate
+              </Button>
+              <Button onClick={() => setDeleteConfirmation(null)} variant="edit">
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Add Employee Overlay Modal */}
       {isAddModalOpen && (
-        <Modal onClose={() => setIsAddModalOpen(false)} title="Add New Employee Account">
+        <Modal onClose={() => setIsAddModalOpen(false)}>
           <div className="add-employee-form-modal">
-            <form onSubmit={handleSubmit}>
+            <h3>Add New Employee Entry</h3>
+            <form onSubmit={handleAddEmployeeSubmit}>
               <div className="form-group">
-                <label>Username*</label>
+                <label>System Username</label>
                 <input type="text" name="username" value={newEmployee.username} onChange={handleFormChange} required />
               </div>
               <div className="form-group">
-                <label>Password*</label>
+                <label>Access Password</label>
                 <input type="password" name="password" value={newEmployee.password} onChange={handleFormChange} required />
               </div>
-              <div className="form-group">
-                <label>Role*</label>
+              <div className="form-group span-two">
+                <label>Email Address</label>
+                <input type="email" name="email" value={newEmployee.email} onChange={handleFormChange} required />
+              </div>
+              <div className="form-group span-two">
+                <label>Role / Operational Designation</label>
                 <select name="employee_type" value={newEmployee.employee_type} onChange={handleFormChange}>
                   <option value="DOCTOR">Doctor</option>
-                  <option value="NURSE">Nurse (General)</option>
-                  <option value="TRIAGE">Triage Nurse</option>
-                  <option value="CHEMIST">Pharmacist</option>
+                  <option value="NURSE">Nurse</option>
+                  <option value="CHEMIST">Pharmacist / Chemist</option>
                   <option value="LAB_TECH">Lab Technician</option>
-                  <option value="RECEPTIONIST">Receptionist</option>
                   <option value="ACCOUNTANT">Accountant</option>
+                  <option value="RECEPTIONIST">Reception / Triage</option>
                   <option value="STORE_MANAGER">Store Manager</option>
-                  <option value="ADMIN">Admin / ICT</option>
                 </select>
               </div>
-              
               <div className="form-group">
                 <label>First Name</label>
-                <input type="text" name="first_name" value={newEmployee.first_name} onChange={handleFormChange} />
+                <input type="text" name="first_name" value={newEmployee.first_name} onChange={handleFormChange} required />
               </div>
               <div className="form-group">
                 <label>Second Name</label>
                 <input type="text" name="second_name" value={newEmployee.second_name} onChange={handleFormChange} />
               </div>
-              
-              <div className="form-group">
+              <div className="form-group span-two">
                 <label>Phone Number</label>
                 <input type="text" name="phone_number" value={newEmployee.phone_number} onChange={handleFormChange} placeholder="e.g. 0712345678" />
               </div>
-
               <div className="form-group">
                 <label>Age</label>
                 <input type="number" name="age" value={newEmployee.age} onChange={handleFormChange} />
@@ -221,8 +248,12 @@ function Staff() {
                 </select>
               </div>
 
-              <button type="submit" className="submit-btn">Add Employee</button>
-              {formError && <p className="form-error">{formError}</p>}
+              {/* Action Error message row spanning full width if it triggers */}
+              {formError && <p className="form-error span-two">{formError}</p>}
+
+              <Button type="submit" variant="submit" className="span-two" style={{ marginTop: '10px' }}>
+                Add Employee
+              </Button>
             </form>
           </div>
         </Modal>
