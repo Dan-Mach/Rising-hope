@@ -52,8 +52,26 @@ function Staff() {
   const handleAddEmployeeSubmit = async (e) => {
     e.preventDefault();
     setFormError(null);
+
+    // Corrected Mapping: email lives at the root level, alongside employee_type
+    const backendData = {
+      employee_type: newEmployee.employee_type,
+      email: newEmployee.email, // <--- Lifted out of 'user' to the root level
+      user: {
+        username: newEmployee.username,
+        password: newEmployee.password,
+        name: {
+          first_name: newEmployee.first_name,
+          second_name: newEmployee.second_name || '',
+          age: newEmployee.age ? parseInt(newEmployee.age, 10) : null,
+          gender: newEmployee.gender,
+          phone_number: newEmployee.phone_number || ''
+        }
+      }
+    };
+
     try {
-      await userService.createEmployee(newEmployee);
+      await userService.createEmployee(backendData);
       setSuccessMessage(`Employee account "${newEmployee.username}" provisioned successfully.`);
       setIsAddModalOpen(false);
       setNewEmployee({
@@ -62,10 +80,22 @@ function Staff() {
       });
       fetchStaff();
     } catch (err) {
-      setFormError(err.response?.data?.detail || 'Validation failed. Check your inputs.');
+      const errorData = err.response?.data;
+      
+      // Unpack validation responses accurately for user feedback
+      if (errorData?.email) {
+        setFormError(`Email Error: ${errorData.email[0]}`);
+      } else if (errorData?.user?.name?.first_name) {
+        setFormError(`First Name: ${errorData.user.name.first_name[0]}`);
+      } else if (errorData?.user?.username) {
+        setFormError(`Username: ${errorData.user.username[0]}`);
+      } else if (errorData?.employee_type) {
+        setFormError(`Role Error: ${errorData.employee_type[0]}`);
+      } else {
+        setFormError(errorData?.detail || 'Validation failed. Verify the form fields.');
+      }
     }
   };
-
   const handleDeleteClick = (employee) => {
     setDeleteConfirmation(employee);
   };
@@ -96,82 +126,85 @@ function Staff() {
       {successMessage && <p className="page-success">{successMessage}</p>}
       {error && <p className="page-error">{error}</p>}
 
-      {loading ? (
-        <p>Loading staff directories...</p>
-      ) : (
-        <div className="staff-list-container">
-          <table className="staff-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Full Name</th>
-                <th>Role Designation</th>
-                <th>Phone</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees.length === 0 ? (
-                <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>No active team members registered.</td>
+      <div className="staff-list-container">
+        <table className="staff-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Full Name</th>
+              <th>Role Designation</th>
+              <th>Phone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <tr key={`skeleton-${index}`} className="skeleton-row">
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '70px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '140px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-badge" style={{ width: '90px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '100px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-btn" style={{ width: '75px' }}></div></td>
                 </tr>
-              ) : (
-                employees.map((emp) => {
-                  // Fallback fallback selector to catch employee_type regardless of API nesting structures
-                  const activeRole = emp.employee_type || emp.user?.employee_type || 'STAFF';
+              ))
+            ) : employees.length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>No active team members registered.</td>
+              </tr>
+            ) : (
+              employees.map((emp) => {
+                const activeRole = emp.employee_type || emp.user?.employee_type || 'STAFF';
+                return (
+                  <tr key={emp.id}>
+                    <td>{emp.user?.username || 'unknown'}</td>
+                    <td>
+                      <strong>
+                        {emp.user?.name?.first_name} {emp.user?.name?.second_name || ''}
+                      </strong>
+                    </td>
+                    <td>
+                      <span className="role-badge">
+                        {activeRole.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td>{emp.user?.name?.phone_number || 'N/A'}</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <Button variant="delete" onClick={() => handleDeleteClick(emp)} style={{ padding: '4px 8px', fontSize: '0.85rem' }}>
+                          Deactivate
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
 
-                  return (
-                    <tr key={emp.id}>
-                      <td>{emp.user?.username || 'unknown'}</td>
-                      <td>
-                        <strong>
-                          {emp.user?.name?.first_name} {emp.user?.name?.second_name || ''}
-                        </strong>
-                      </td>
-                      <td>
-                        {/* Renders the verified fallback designation role text string safely */}
-                        <span className="role-badge">
-                          {activeRole.replace('_', ' ')}
-                        </span>
-                      </td>
-                      <td>{emp.user?.name?.phone_number || 'N/A'}</td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <Button variant="delete" onClick={() => handleDeleteClick(emp)} style={{ padding: '4px 8px', fontSize: '0.85rem' }}>
-                            Deactivate
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-
-          {totalPages > 1 && (
-            <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', gap: '5px', alignItems: 'center' }}>
-              <Button 
-                variant="edit"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
-              >
-                &larr; Previous
-              </Button>
-              <span>Page {currentPage} of {totalPages}</span>
-              <Button 
-                variant="edit"
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
-              >
-                Next &rarr;
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
+        {!loading && totalPages > 1 && (
+          <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', gap: '5px', alignItems: 'center' }}>
+            <Button 
+              variant="edit"
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
+            >
+              &larr; Previous
+            </Button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <Button 
+              variant="edit"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
+            >
+              Next &rarr;
+            </Button>
+          </div>
+        )}
+      </div>
 
       {deleteConfirmation && (
         <Modal onClose={() => setDeleteConfirmation(null)}>
@@ -193,7 +226,6 @@ function Staff() {
         </Modal>
       )}
 
-      {/* Add Employee Overlay Modal */}
       {isAddModalOpen && (
         <Modal onClose={() => setIsAddModalOpen(false)}>
           <div className="add-employee-form-modal">
@@ -248,7 +280,6 @@ function Staff() {
                 </select>
               </div>
 
-              {/* Action Error message row spanning full width if it triggers */}
               {formError && <p className="form-error span-two">{formError}</p>}
 
               <Button type="submit" variant="submit" className="span-two" style={{ marginTop: '10px' }}>

@@ -12,17 +12,41 @@ import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import './Dashboard.css';
 
+// Reusable Skeleton Component for Dashboard Statistic Cards
+const SkeletonCard = () => (
+  <div className="skeleton-card">
+    <div className="skeleton-line short"></div>
+    <div className="skeleton-circle-or-num"></div>
+  </div>
+);
+
+// Reusable Skeleton Component for Dashboard Sidebar Lists
+const SkeletonList = ({ rows = 3 }) => (
+  <div className="skeleton-list-wrapper">
+    {Array.from({ length: rows }).map((_, index) => (
+      <div key={index} className="skeleton-list-item">
+        <div className="skeleton-line long"></div>
+        <div className="skeleton-line short"></div>
+      </div>
+    ))}
+  </div>
+);
+
 // 1. NURSE DASHBOARD
 const NurseDashboard = ({ stats, loading }) => (
   <div className="dashboard-lists">
-    <div className="dashboard-list-card">
+    <div className="dashboard-list-card wide-card">
       <h3>Ward Overview</h3>
-      <p className="text-gray-600 mb-4">Monitor admitted patients and nursing rounds.</p>
+      <p className="text-gray-600 mb-4">Monitor admitted patients and nursing rounds operations.</p>
       <div className="stat-card-container">
-        <div className="stat-card" style={{ borderLeftColor: '#10b981', minWidth: 'auto' }}>
-          <h3>Admitted Patients</h3>
-          <p className="stat-number">{loading ? '...' : stats.admittedPatients}</p>
-        </div>
+        {loading ? (
+          <SkeletonCard />
+        ) : (
+          <div className="stat-card" style={{ minWidth: 'auto' }}>
+            <h3>Admitted Patients</h3>
+            <p className="stat-number">{stats.admittedPatients}</p>
+          </div>
+        )}
       </div>
       <div style={{ marginTop: '20px' }}>
         <Link to="/ward" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
@@ -31,405 +55,302 @@ const NurseDashboard = ({ stats, loading }) => (
       </div>
     </div>
     
-    <div className="dashboard-list-card">
-      <h3>Quick Actions</h3>
+    <div className="dashboard-list-card sidebar-card">
+      <h3>Quick Tools & Actions</h3>
       <ul className="dashboard-list">
-        <li><Link to="/triage-queue">Triage Queue (New Admissions)</Link></li>
-        <li><Link to="/ward">Log Vitals / Rounds</Link></li>
+        <li><Link to="/patients">Patient Directory / Triage</Link></li>
+        <li><Link to="/ward">Bed Allocation & Tracking</Link></li>
       </ul>
     </div>
   </div>
 );
 
-// 2. LAB TECH DASHBOARD
-const LabTechDashboard = ({ stats, loading }) => (
+// 2. DOCTOR DASHBOARD
+const DoctorDashboard = ({ recentPatients, loading }) => (
   <div className="dashboard-lists">
-    <div className="dashboard-list-card">
-      <h3>Laboratory Queue</h3>
-      <p className="text-gray-600 mb-4">Pending tests requiring analysis.</p>
-      <div className="stat-card-container">
-        <div className="stat-card" style={{ borderLeftColor: '#8b5cf6', minWidth: 'auto' }}>
-          <h3>Pending Requests</h3>
-          <p className="stat-number">{loading ? '...' : stats.pendingTests}</p>
-        </div>
-      </div>
-      <div style={{ marginTop: '20px' }}>
-        <Link to="/lab" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
-          Open Lab Interface &rarr;
+    <div className="dashboard-list-card wide-card">
+      <h3>Patient Consultation Queue</h3>
+      <p className="text-gray-600 mb-4">Select an active patient registration below to check vital signs or write clinical notes.</p>
+      <div style={{ marginTop: '15px' }}>
+        <Link to="/patients" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
+          Open Medical Consultation Desk &rarr;
         </Link>
-      </div>
-    </div>
-  </div>
-);
-
-//3. ACCOUNTANT DASHBOARD 
-const AccountantDashboard = ({ stats, loading }) => (
-  <div className="dashboard-lists">
-    <div className="dashboard-list-card">
-      <h3>Accounts & Billing</h3>
-      <p className="text-gray-600 mb-4">Outstanding invoices and payment processing.</p>
-      <div className="stat-card-container">
-        <div className="stat-card" style={{ borderLeftColor: '#f59e0b', minWidth: 'auto' }}>
-          <h3>Unpaid Invoices</h3>
-          <p className="stat-number">{loading ? '...' : stats.pendingInvoices}</p>
-        </div>
-      </div>
-      <div style={{ marginTop: '20px' }}>
-        <Link to="/accounts" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
-          Go to Billing &rarr;
-        </Link>
-      </div>
-    </div>
-  </div>
-);
-
-//4. DOCTOR  DASHBOARDS 
-const DoctorDashboard = ({ stats, loading }) => (
-  <div className="dashboard-lists">
-    <div className="dashboard-list-card">
-      <h3>Your Action Center</h3>
-      <p className="text-gray-600 mb-4">Focus on the current patient flow and consultation needs.</p>
-      
-      <div style={{ marginTop: '20px' }}>
-        <Link to="/triage-queue" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
-          Go to Patient Queue &rarr;
-        </Link>stats
       </div>
     </div>
     
-    <div className="dashboard-list-card">
-      <h3>Quick Links</h3>
-      <ul className="dashboard-list">
-        <li>
-            <Link to="/triage-queue">Start New Consultation</Link>
-        </li>
-        <li>
-            <Link to="/reports">View Consultation Reports</Link>
-        </li>
-        <li>
-            <Link to="/ward">View Admitted Patients</Link>
-        </li>
-      </ul>
-    </div>
-  </div>
-);
-
-//5. CHEMIST DASHBOARD
-const ChemistDashboard = ({ stats, loading }) => (
-  <div className="dashboard-lists">
-    <div className="dashboard-list-card">
-      <h3>Pharmacy Queue</h3>
-      <p className="text-gray-600 mb-4">Immediate tasks for dispensing prescriptions.</p>
-      <div className="stat-card-container">
-        <div className="stat-card" style={{ borderLeftColor: '#f59e0b', minWidth: 'auto' }}>
-          <h3>Pending Payment</h3>
-          <p className="stat-number">{loading ? '...' : stats.pendingPayment}</p>
-        </div>
-        <div className="stat-card" style={{ borderLeftColor: '#10b981', minWidth: 'auto' }}>
-          <h3>Ready to Dispense</h3>
-          <p className="stat-number">{loading ? '...' : stats.paidPrescriptions}</p>
-        </div>
-      </div>
-      <div style={{ marginTop: '20px' }}>
-        <Link to="/dispense" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
-          Go to Dispense Module &rarr;
-        </Link>
-      </div>
-    </div>
-  </div>
-);
-
-// 6. TRIAGE / RECEPTION DASHBOARD 
-const TriageDashboard = ({ stats, loading }) => (
-  <div className="dashboard-lists">
-    <div className="dashboard-list-card">
-      <h3>Patient Check-in Status</h3>
-      <p className="text-gray-600 mb-4">View the current status of the intake process.</p>
-      <div className="stat-card-container">
-        <div className="stat-card" style={{ borderLeftColor: '#3b82f6', minWidth: 'auto' }}>
-          <h3>Total Visits Today</h3>
-          <p className="stat-number">{loading ? '...' : stats.visitsToday}</p>
-        </div>
-      </div>
-      <div style={{ marginTop: '20px' }}>
-        <Link to="/register" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
-          Register New Patient &rarr;
-        </Link>
-      </div>
-
-    </div>
-    <div className="dashboard-list-card">
-      <h3>Queue Overview</h3>
-      <ul className="dashboard-list">
-        <li><Link to="/triage-queue">View Full Queue Details</Link></li>
-        <li>Patients Waiting for Doctor: {loading ? '...' : stats.waitingPatients}</li>
-      </ul>
-    </div>
-  </div>
-);
-
-// 7. STORE MANAGER DASHBOARD
-const StoreManagerDashboard = ({ stats, lowStockMeds, loading }) => (
-  <div className="dashboard-lists">
-    <div className={`dashboard-list-card ${stats}`}>
-        <h3>Inventory Overview Statistics</h3>
-        <p className="text-gray-600 mb-4">Quick overview of medicine statistics.</p>
-        <div className="stat-card-container">
-          <div className="stat-card" style={{ borderLeftColor: '#10b981', minWidth: 'auto' }}>
-            <h3>Total Medicines</h3>
-            <p className="stat-number">{loading ? '...' : stats.medicines}</p>
-          </div>
-          <div className="stat-card" style={{ borderLeftColor: '#ef4444', minWidth: 'auto' }}>
-            <h3>Expired </h3>
-            <p className="stat-number">{loading ? '...' : (stats.expiredMeds ?? 0)}</p>
-          </div>
-        </div>
-    </div>
-    <div className="dashboard-list-card">
-      <h3>Critical Stock Alerts</h3>
-      <p className="text-gray-600 mb-4">Immediate attention required for low inventory items.</p>
-      <div className="stat-card-container">
-        <div className="stat-card low-stock-card" style={{ borderLeftColor: '#ef4444', minWidth: 'auto' }}>
-          <h3>Items Below 10 Units</h3>
-          <p className="stat-number">{loading ? '...' : lowStockMeds.length}</p>
-        </div>
-      </div>
-      <div style={{ marginTop: '20px' }}>
-        <Link to="/inventory" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
-          Manage Inventory &rarr;
-        </Link>
-      </div>
-    </div>
-    <div className={`dashboard-list-card ${lowStockMeds.length > 0 ? 'low-stock-card' : ''}`}>
-      <h3>Low Stock List</h3>
-      <ul className="dashboard-list">
-        {lowStockMeds.length > 0 ? (
-          lowStockMeds.map(m => (
-            <li key={m.id}>
-              <span>{m.name}</span>
-              <span className="list-meta low-stock">{m.quantity} left</span>
+    <div className="dashboard-list-card sidebar-card">
+      <h3>My Recent Consultations</h3>
+      {loading ? (
+        <SkeletonList rows={3} />
+      ) : (
+        <ul className="dashboard-list">
+          {recentPatients.slice(0, 3).map(p => (
+            <li key={p.id}>
+              <span>{p.first_name} {p.second_name}</span>
+              <span className="list-meta">ID: #{p.id}</span>
             </li>
-          ))
-        ) : (
-          <li className="text-center p-4 text-gray-500">All medicines are well-stocked.</li>
-        )}
+          ))}
+          {recentPatients.length === 0 && <li className="text-gray-500">No recent entries logged.</li>}
+        </ul>
+      )}
+    </div>
+  </div>
+);
+
+// 3. PHARMACIST DASHBOARD
+const PharmacistDashboard = ({ lowStockMeds, loading }) => (
+  <div className="dashboard-lists">
+    <div className="dashboard-list-card wide-card">
+      <h3>Prescription Fulfillment</h3>
+      <p className="text-gray-600 mb-4">Review medical sheets, calculate pricing, and record drug dispensing workflows.</p>
+      <div style={{ marginTop: '15px' }}>
+        <Link to="/dispense" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
+          Open Dispensing Console &rarr;
+        </Link>
+      </div>
+    </div>
+    
+    <div className="dashboard-list-card sidebar-card urgent-card-alert">
+      <h3>Critical Stock Warnings</h3>
+      {loading ? (
+        <SkeletonList rows={3} />
+      ) : (
+        <ul className="dashboard-list">
+          {lowStockMeds.slice(0, 4).map(m => (
+            <li key={m.id}>
+              <span><strong>{m.name}</strong></span>
+              <span className="list-meta low-stock">{m.quantity} units left</span>
+            </li>
+          ))}
+          {lowStockMeds.length === 0 && <li className="text-gray-500">All inventory batches healthy.</li>}
+        </ul>
+      )}
+    </div>
+  </div>
+);
+
+// 4. LAB TECH DASHBOARD
+const LabTechDashboard = () => (
+  <div className="dashboard-lists">
+    <div className="dashboard-list-card wide-card">
+      <h3>Diagnostics & Investigation Queue</h3>
+      <p className="text-gray-600 mb-4">Update specimen sample tracking profiles, configure assay parameters, and report diagnostic answers.</p>
+      <div style={{ marginTop: '15px' }}>
+        <Link to="/lab" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
+          Launch Laboratory Workbench &rarr;
+        </Link>
+      </div>
+    </div>
+    <div className="dashboard-list-card sidebar-card">
+      <h3>Lab Operations</h3>
+      <ul className="dashboard-list">
+        <li><Link to="/lab">Pending Work Orders</Link></li>
+        <li><Link to="/lab">Test Catalog Settings</Link></li>
       </ul>
+    </div>
+  </div>
+);
+
+// 5. ACCOUNTANT DASHBOARD
+const AccountantDashboard = ({ invoiceStats, loading }) => (
+  <div className="dashboard-lists">
+    <div className="dashboard-list-card wide-card">
+      <h3>Billing Ledger Summary</h3>
+      <div className="stat-card-container">
+        {loading ? (
+          <>
+            <SkeletonCard />
+            <SkeletonCard />
+          </>
+        ) : (
+          <>
+            <div className="stat-card">
+              <h3>Pending Invoices</h3>
+              <p className="stat-number">{invoiceStats.pendingCount}</p>
+            </div>
+            <div className="stat-card">
+              <h3>Total Receivables</h3>
+              <p className="stat-number">${Number(invoiceStats.totalPendingAmount).toFixed(2)}</p>
+            </div>
+          </>
+        )}
+      </div>
+      <div style={{ marginTop: '25px' }}>
+        <Link to="/accounts" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
+          Open Cashier Desk &rarr;
+        </Link>
+      </div>
+    </div>
+    
+    <div className="dashboard-list-card sidebar-card">
+      <h3>Financial Access Links</h3>
+      <ul className="dashboard-list">
+        <li><Link to="/accounts">Patient Invoices</Link></li>
+        <li><Link to="/accounts">Process Reimbursements</Link></li>
+      </ul>
+    </div>
+  </div>
+);
+
+// 6. ADMIN DASHBOARD
+const AdminDashboard = ({ stats, recentPatients, lowStockMeds, loading }) => (
+  <div className="admin-grid-dashboard">
+    <div className="stat-card-container">
+      {loading ? (
+        Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+      ) : (
+        <>
+          <div className="stat-card">
+            <h3>Total Registered Patients</h3>
+            <p className="stat-number">{stats.totalPatients}</p>
+          </div>
+          <div className="stat-card">
+            <h3>Active Workforce Staff</h3>
+            <p className="stat-number">{stats.totalEmployees}</p>
+          </div>
+          <div className="stat-card">
+            <h3>Active Clinical Visits</h3>
+            <p className="stat-number">{stats.activeVisits}</p>
+          </div>
+          <div className="stat-card">
+            <h3>Inventory Varieties</h3>
+            <p className="stat-number">{stats.totalMedicines}</p>
+          </div>
+        </>
+      )}
+    </div>
+
+    <div className="dashboard-lists">
+      <div className="dashboard-list-card">
+        <h3>Recent Patient Admissions</h3>
+        {loading ? (
+          <SkeletonList rows={4} />
+        ) : (
+          <ul className="dashboard-list">
+            {recentPatients.slice(0, 4).map(p => (
+              <li key={p.id}>
+                <span><strong>{p.first_name} {p.second_name}</strong></span>
+                <span className="list-meta">Registered: {new Date(p.register_date).toLocaleDateString()}</span>
+              </li>
+            ))}
+            {recentPatients.length === 0 && <li className="text-gray-500">No patient logs registered.</li>}
+          </ul>
+        )}
+      </div>
+
+      <div className={`dashboard-list-card ${lowStockMeds.length > 0 ? 'low-stock-card' : ''}`}>
+        <h3>Stock Alert: Low Inventory</h3>
+        {loading ? (
+          <SkeletonList rows={4} />
+        ) : (
+          <ul className="dashboard-list">
+            {lowStockMeds.slice(0, 4).map(m => (
+              <li key={m.id}>
+                <span>{m.name}</span>
+                <span className="list-meta low-stock">{m.quantity} left</span>
+              </li>
+            ))}
+            {lowStockMeds.length === 0 && <li className="text-gray-500">All medicines well-stocked.</li>}
+          </ul>
+        )}
+      </div>
     </div>
   </div>
 );
 
 function Dashboard() {
   const { user } = useAuth();
-  //const navigate = useNavigate();
-  
-  const [stats, setStats] = useState({
-    patients: 0,
-    staff: 0,
-    medicines: 0,
-    waitingPatients: 0,
-    visitsToday: 0,
-    pendingPayment: 0,
-    paidPrescriptions: 0,
-    admittedPatients: 0,
-    pendingTests: 0,
-    pendingInvoices: 0
-  });
-  
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const [adminStats, setAdminStats] = useState({ totalPatients: 0, totalEmployees: 0, activeVisits: 0, totalMedicines: 0 });
+  const [nurseStats, setNurseStats] = useState({ admittedPatients: 0 });
+  const [accountantStats, setAccountantStats] = useState({ pendingCount: 0, totalPendingAmount: 0 });
   const [recentPatients, setRecentPatients] = useState([]);
   const [lowStockMeds, setLowStockMeds] = useState([]);
 
-  const [loading, setLoading] = useState(true);
-  const [error] = useState(null); // Global error
-
-  const role = user?.user?.employee_type;
-  const isAdminOrStoreManager = role === 'ADMIN' || role === 'STORE_MANAGER';
+  const role = user?.user?.employee_type || '';
 
   useEffect(() => {
-    if (!role) return;
-
-    const loadAsyncData = async () => {
-      setLoading(true);
-
-      const updateStat = (key, value) => {
-        setStats(prev => ({ ...prev, [key]: value }));
-      };
-
-      const promises = [];
-
-      // 1. DOCTOR Stats
-      if (role === 'DOCTOR') {
-        promises.push(
-          visitService.getVisits(1, 1, '', 'PENDING')
-            .then(res => updateStat('waitingPatients', res.data.count || 0))
-            .catch(err => console.warn("Failed to load waiting patients", err))
-        );
-      }
-
-      // 2. TRIAGE / RECEPTION Stats
-      if (role === 'TRIAGE' || role === 'RECEPTIONIST') {
-        promises.push(
-          visitService.getVisits(1, 1, '', '')
-            .then(res => updateStat('visitsToday', res.data.count || 0))
-            .catch(err => console.warn("Failed to load visits", err))
-        );
-      }
-
-      // 3. CHEMIST Stats
-      if (role === 'CHEMIST') {
-        promises.push(
-          prescriptionService.getAllPrescriptions()
-            .then(res => {
-                const all = res.data.results || res.data || [];
-                updateStat('pendingPayment', all.filter(p => p.status === 'PENDING').length);
-                updateStat('paidPrescriptions', all.filter(p => p.status === 'PAID').length);
-            })
-            .catch(err => console.warn("Failed to load prescriptions", err))
-        );
-      }
-
-      // 4. NURSE Stats
-      if (role === 'NURSE') {
-        promises.push(
-          wardService.getAdmittedPatients(1, 1)
-            .then(res => updateStat('admittedPatients', res.data.count || 0))
-            .catch(err => console.warn("Failed to load ward stats", err))
-        );
-      }
-
-      // 5. LAB TECH Stats
-      if (role === 'LAB_TECH') {
-        promises.push(
-          labService.getTestRequests(1, 1, 'REQUESTED')
-            .then(res => updateStat('pendingTests', res.data.count || 0))
-            .catch(err => console.warn("Failed to load lab stats", err))
-        );
-      }
-
-      // 6. ACCOUNTANT Stats
-      if (role === 'ACCOUNTANT') {
-        promises.push(
-          accountService.getAllInvoices(1, 1, '', 'PENDING')
-            .then(res => updateStat('pendingInvoices', res.data.count || 0))
-            .catch(err => console.warn("Failed to load invoices", err))
-        );
-      }
-
-      // 7. ADMIN / MANAGER Stats 
-      if (isAdminOrStoreManager) {
-        // Inventory
-        promises.push(
-            inventoryService.getAllMedicines()
-            .then(res => {
-                const meds = res.data.results || res.data || [];
-                updateStat('medicines', meds.length);
-                setLowStockMeds(meds.filter(m => m.quantity < 10));
-            })
-            .catch(err => console.warn("Inventory fetch failed", err))
-        );
+    async function loadDashboardData() {
+      try {
+        setLoading(true);
+        setError(null);
 
         if (role === 'ADMIN') {
-            // Patients
-            promises.push(
-                patientService.getAllPatients()
-                .then(res => {
-                    const pts = res.data.results || res.data || [];
-                    updateStat('patients', pts.length);
-                    setRecentPatients(pts.slice(0, 5));
-                })
-                .catch(err => console.warn("Patients fetch failed", err))
-            );
-            
-            // Staff
-            promises.push(
-                userService.getAllEmployees()
-                .then(res => updateStat('staff', res.data.results ? res.data.results.length : (res.data.length || 0)))
-                .catch(err => console.warn("Staff fetch failed", err))
-            );
+          const [pRes, empRes, visitRes, medRes] = await Promise.all([
+            patientService.getAllPatients(1, 5),
+            userService.getAllEmployees(1, 1),
+            visitService.getVisits('ACTIVE'),
+            inventoryService.getAllMedicines(1, 100)
+          ]);
+
+          const allMeds = medRes.data.results || [];
+          const criticallyLow = allMeds.filter(m => m.quantity <= 10);
+
+          setAdminStats({
+            totalPatients: pRes.data.count || 0,
+            totalEmployees: empRes.data.count || 0,
+            activeVisits: visitRes.data.count || (visitRes.data.results?.length) || 0,
+            totalMedicines: pRes.data.count || allMeds.length
+          });
+          setRecentPatients(pRes.data.results || []);
+          setLowStockMeds(criticallyLow);
+
+        } else if (role === 'DOCTOR') {
+          const pRes = await patientService.getAllPatients(1, 5);
+          setRecentPatients(pRes.data.results || []);
+
+        } else if (role === 'PHARMACIST') {
+          const medRes = await inventoryService.getAllMedicines(1, 100);
+          const allMeds = medRes.data.results || [];
+          setLowStockMeds(allMeds.filter(m => m.quantity <= 10));
+
+        } else if (role === 'NURSE') {
+          const wardRes = await wardService.getAdmissions();
+          setNurseStats({ admittedPatients: wardRes.data.count || wardRes.data.length || 0 });
+
+        } else if (role === 'ACCOUNTANT') {
+          const invRes = await accountService.getAllInvoices(1, 100, '', 'PENDING');
+          const pInvoices = invRes.data.results || [];
+          const sumPending = pInvoices.reduce((acc, curr) => acc + Number(curr.balance), 0);
+          setAccountantStats({
+            pendingCount: invRes.data.count || pInvoices.length,
+            totalPendingAmount: sumPending
+          });
         }
+      } catch {
+        setError('Error synchronizing active telemetry widgets.');
+      } finally {
+        setLoading(false);
       }
+    }
 
-      await Promise.allSettled(promises);
-      setLoading(false);
-    };
-
-    loadAsyncData();
-  }, [role, isAdminOrStoreManager]);
-  
+    if (role) loadDashboardData();
+  }, [role]);
 
   const renderDashboardContent = () => {
-    if (loading) return <h2>Loading {role.replace('_', ' ')} Dashboard...</h2>;
-    
     switch (role) {
-      case 'DOCTOR': return <DoctorDashboard stats={stats} loading={loading} />;
-      case 'CHEMIST': return <ChemistDashboard stats={stats} loading={loading} />;
-      case 'TRIAGE': return <TriageDashboard stats={stats} loading={loading} />;
-      case 'RECEPTIONIST': return <TriageDashboard stats={stats} loading={loading} />;
-      case 'NURSE': return <NurseDashboard stats={stats} loading={loading} />;
-      case 'LAB TECH': return <LabTechDashboard stats={stats} loading={loading} />;
-      case 'ACCOUNTANT': return <AccountantDashboard stats={stats} loading={loading} />;
-      case 'STORE_MANAGER': return <StoreManagerDashboard stats={stats} lowStockMeds={lowStockMeds} loading={loading} />;
-      case 'ADMIN':
-        return (
-          <>
-            <div className="stat-card-container">
-              <div className="stat-card">
-                <h3>Total Patient Records</h3>
-                <p className="stat-number">{stats.patients}</p>
-              </div>
-              <div className="stat-card" >
-                <h3>Total Active Staff</h3>
-                <p className="stat-number">{stats.staff}</p>
-              </div>
-              <div className="stat-card">
-                <h3>Medicine Stock Types</h3>
-                <p className="stat-number">{stats.medicines}</p>
-              </div>
-            </div>
-
-            <div className="dashboard-lists">
-              <div className="dashboard-list-card">
-                <h3>Recent Patient Registrations</h3>
-                <ul className="dashboard-list">
-                  {recentPatients.length > 0 ? (
-                    recentPatients.map(p => (
-                      <li key={p.id}>
-                        <span>{p.name?.first_name} {p.name?.second_name}</span>
-                        <span className="list-meta">Registered: {new Date(p.register_date).toLocaleDateString()}</span>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="text-center p-4 text-gray-500">No recent patient activity.</li>
-                  )}
-                </ul>
-              </div>
-
-              <div className={`dashboard-list-card ${lowStockMeds.length > 0 ? 'low-stock-card' : ''}`}>
-                <h3>Stock Alert: Low Inventory</h3>
-                <ul className="dashboard-list">
-                  {lowStockMeds.length > 0 ? (
-                    lowStockMeds.map(m => (
-                      <li key={m.id}>
-                        <span>{m.name}</span>
-                        <span className="list-meta low-stock">{m.quantity} left</span>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="text-center p-4 text-gray-500">All medicines are well-stocked.</li>
-                  )}
-                </ul>
-              </div>
-            </div>
-          </>
-        );
-      default: return <h2>Welcome, {user.user?.username}! Select a link in the navigation bar to begin.</h2>;
+      case 'NURSE':      return <NurseDashboard stats={nurseStats} loading={loading} />;
+      case 'DOCTOR':     return <DoctorDashboard recentPatients={recentPatients} loading={loading} />;
+      case 'PHARMACIST': return <PharmacistDashboard lowStockMeds={lowStockMeds} loading={loading} />;
+      case 'LAB_TECH':   return <LabTechDashboard />;
+      case 'ACCOUNTANT': return <AccountantDashboard invoiceStats={accountantStats} loading={loading} />;
+      case 'ADMIN':      return <AdminDashboard stats={adminStats} recentPatients={recentPatients} lowStockMeds={lowStockMeds} loading={loading} />;
+      default:           return <h2>Welcome, {user?.user?.username || 'User'}! Please utilize the side navigation ledger.</h2>;
     }
   };
 
   return (
     <div className="dashboard-page">
-      <h2>{role ? `${role.replace('_', ' ')} Dashboard` : 'Dashboard'}</h2>
+      <div className="dashboard-clean-header">
+        <h2>{role ? `${role.replace('_', ' ')} Dashboard` : 'Control Panel'}</h2>
+        <div className="header-date-badge">{new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</div>
+      </div>
       {error && <p className="page-error">{error}</p>}
-      {renderDashboardContent()}
+      <div className="dashboard-viewport-main">
+        {renderDashboardContent()}
+      </div>
     </div>
   );
 }

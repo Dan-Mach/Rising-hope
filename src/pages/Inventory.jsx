@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { inventoryService } from '../api/inventoryService';
 import Modal from '../components/common/Modal';
+import Button from '../components/common/Button'; // Shared custom UI button element
 import './Inventory.css';
 
 function Inventory() {
@@ -10,7 +11,6 @@ function Inventory() {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // ... (other state variables) ...
   const [newMed, setNewMed] = useState({ name: '', quantity: 0, price: 0.00 });
   const [formError, setFormError] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -27,15 +27,12 @@ function Inventory() {
     try {
       setLoading(true);
       const response = await inventoryService.getAllMedicines(currentPage, pageSize, sortOrder);
-      
       const medicineData = response.data.results || response.data || [];
-      const totalCount = response.data.count || response.data.length || 0;
-      
       setMedicines(medicineData);
-      setTotalMedicines(totalCount);
+      setTotalMedicines(response.data.count || medicineData.length || 0);
       setError(null);
-    } catch (err) {
-      setError('Failed to fetch inventory. Your session may be expired.', err);
+    } catch {
+      setError('Failed to fetch stock records ledger.');
     } finally {
       setLoading(false);
     }
@@ -45,257 +42,222 @@ function Inventory() {
     fetchMedicines();
   }, [fetchMedicines]);
 
-  // ... (handleFormChange, handleSubmit, etc. remain the same) ...
   const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setNewMed(prev => ({ ...prev, [name]: value }));
+    setNewMed({ ...newMed, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError(null);
-    setSuccessMessage(null);
     try {
-      const response = await inventoryService.createMedicine(newMed);
+      await inventoryService.createMedicine(newMed);
+      setSuccessMessage(`Medicine item "${newMed.name}" added to inventory catalog.`);
+      setIsAddModalOpen(false);
       setNewMed({ name: '', quantity: 0, price: 0.00 });
-      setSuccessMessage(`Medicine "${response.data.name}" added successfully.`);
-      fetchMedicines();
-      setIsAddModalOpen(false); 
-    } catch (err) {
-      setFormError('Failed to create medicine. Check details or name duplication.', err);
-    }
-  };
-
-  const handleDeleteRequest = (med) => {
-    setDeleteConfirmation(med);
-  };
-  
-  const handleConfirmedDelete = async () => {
-    if (!deleteConfirmation) return;
-    const id = deleteConfirmation.id;
-    setDeleteConfirmation(null);
-    setError(null);
-    setSuccessMessage(null);
-    try {
-      await inventoryService.deleteMedicine(id);
-      setSuccessMessage(`Medicine (ID: ${id}) deleted successfully.`);
       fetchMedicines();
     } catch (err) {
-      setError('Failed to delete medicine.', err);
+      setFormError(err.response?.data?.detail || 'Failed to populate medicine entry.');
     }
   };
 
   const handleEditClick = (med) => {
-    setEditingMed(med);
+    setEditingMed({ ...med });
     setIsEditModalOpen(true);
-    setEditFormError(null);
-    setError(null);
-    setSuccessMessage(null);
   };
 
-  const handleEditFormChange = (e) => {
-    const { name, value } = e.target;
-    setEditingMed(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleUpdateSubmit = async (e) => {
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
-    if (!editingMed) return;
     setEditFormError(null);
-    setSuccessMessage(null);
     try {
-      const { id, name, quantity, price } = editingMed;
-      const dataToUpdate = { name, quantity, price };
-      const response = await inventoryService.updateMedicine(id, dataToUpdate);
+      await inventoryService.updateMedicine(editingMed.id, editingMed);
+      setSuccessMessage(`Stock information updated for item: ${editingMed.name}`);
       setIsEditModalOpen(false);
-      setEditingMed(null);
-      setSuccessMessage(`Medicine "${response.data.name}" updated successfully.`);
       fetchMedicines();
     } catch (err) {
-      setEditFormError('Failed to update medicine. Check the input values.', err);
+      setEditFormError(err.response?.data?.detail || 'Failed to save changes.');
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmation) return;
+    try {
+      await inventoryService.deleteMedicine(deleteConfirmation.id);
+      setSuccessMessage('Inventory profile deleted from current registry.');
+      setDeleteConfirmation(null);
+      fetchMedicines();
+    } catch {
+      setError('De-provisioning failed.');
     }
   };
 
   const totalPages = Math.ceil(totalMedicines / pageSize);
-  const handlePageSizeChange = (e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); };
-  const handleSortChange = (e) => { setSortOrder(e.target.value); setCurrentPage(1); };
-  const handleNextPage = () => { if (currentPage < totalPages) setCurrentPage(currentPage + 1); };
-  const handlePrevPage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1); };
 
-  if (loading && medicines.length === 0) {
-    return <div className="inventory-page"><h2>Loading inventory...</h2></div>;
-  }
-  
   return (
     <div className="inventory-page">
-      <h2> Products</h2>
-
-      {error && <p className="page-error">Error: {error}</p>}
-      {successMessage && <p className="page-success">{successMessage}</p>}
-
-      <div className="inventory-header">
-        <button onClick={fetchMedicines} className="edit-btn" style={{ marginRight: '10px' }}>
-           ↻ Refresh List
-        </button>
-        <button onClick={() => setIsAddModalOpen(true)} className="submit-btn">
+      {/* Dynamic Header Section - Clears vertical Dead Space */}
+      <div className="inventory-header-row">
+        <h2>Stock Inventory Registry</h2>
+        <Button onClick={() => setIsAddModalOpen(true)} variant="submit">
           + Add New Medicine
-        </button>
+        </Button>
       </div>
 
+      {successMessage && <p className="page-success">{successMessage}</p>}
+      {error && <p className="page-error">{error}</p>}
+
       <div className="inventory-list-container">
-        {/* ... (Pagination and Table remain the same) ... */}
-        <div className="pagination-controls">
-          <div className="form-group sort-controls">
-            <label htmlFor="sortOrder">Sort by:</label>
-            <select id="sortOrder" value={sortOrder} onChange={handleSortChange}>
-              <option value="name">Name (A-Z)</option>
-              <option value="-name">Name (Z-A)</option>
-              <option value="-date_added">Date Added (Newest)</option>
-              <option value="-price">Price (High-Low)</option>
-              <option value="price">Price (Low-High)</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="pageSize">Items per page:</label>
-            <select id="pageSize" value={pageSize} onChange={handlePageSizeChange}>
-              <option value={10}>10</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-          </div>
-          <span className="page-info">
-            {totalPages > 1 ? `Page ${currentPage} of ${totalPages} | ` : ''}
-            {totalMedicines} 
-          </span>
-          <div className="pagination-buttons">
-            <button onClick={handlePrevPage} disabled={currentPage === 1} className="pagination-btn">
-              &larr; Previous
-            </button>
-            <button onClick={handleNextPage} disabled={currentPage === totalPages || totalMedicines === 0} className="pagination-btn">
-              Next &rarr;
-            </button>
-          </div>
-        </div>
-
-        <table className="inventory-table">
+        <table className="inventory-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Quantity</th>
-              <th>Price</th>
-              <th>Date Added</th>
+              <th>Medicine Name</th>
+              <th>Available Qty</th>
+              <th>Unit Cost Price</th>
+              <th>Status Alert</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {loading && (
-              <tr>
-                <td colSpan="5">Loading...</td>
-              </tr>
-            )}
-            {!loading && medicines.length > 0 ? (
-              medicines.map((med) => (
-                <tr key={med.id}>
-                  <td>{med.name}</td>
-                  <td className={med.quantity < 10 ? 'low-stock' : ''}>
-                    {med.quantity}
-                    {med.quantity < 10 && ' (Low Stock!)'}
-                  </td>
-                  <td>${parseFloat(med.price).toFixed(2)}</td>
-                  <td>
-                    {med.date_added ? new Date(med.date_added).toLocaleDateString() : 'N/A'}
-                  </td>
-                  <td>
-                    <div className="action-buttons">
-                      <button onClick={() => handleEditClick(med)} className="edit-btn">Edit</button>
-                      <button onClick={() => handleDeleteRequest(med)} className="delete-btn">Delete</button>
-                    </div>
-                  </td>
+            {loading ? (
+              /* Shimmering Skeleton Loader Section */
+              Array.from({ length: 5 }).map((_, index) => (
+                <tr key={`skeleton-${index}`} className="skeleton-row">
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '180px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '50px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '60px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-badge" style={{ width: '80px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-btn" style={{ width: '130px' }}></div></td>
                 </tr>
               ))
-            ) : (
-              !loading && <tr>
-                <td colSpan="5">No medicines found in inventory.</td>
+            ) : medicines.length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>No medicines found in active catalog stock.</td>
               </tr>
+            ) : (
+              medicines.map((med) => {
+                const isLowStock = med.quantity <= 10;
+                return (
+                  <tr key={med.id}>
+                    <td><strong>{med.name}</strong></td>
+                    <td>{med.quantity} units</td>
+                    <td>${Number(med.price).toFixed(2)}</td>
+                    <td>
+                      <span className={`stock-status-badge ${isLowStock ? 'low-stock-alert' : 'healthy-stock-alert'}`}>
+                        {isLowStock ? 'Low Stock' : 'In Stock'}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <Button variant="edit" onClick={() => handleEditClick(med)} style={{ padding: '4px 8px', fontSize: '0.85rem' }}>
+                          Update Stock
+                        </Button>
+                        <Button variant="delete" onClick={() => setDeleteConfirmation(med)} style={{ padding: '4px 8px', fontSize: '0.85rem' }}>
+                          Delete
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
+
+        {!loading && totalPages > 1 && (
+          <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', gap: '5px', alignItems: 'center' }}>
+            <Button 
+              variant="edit"
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
+            >
+              &larr; Previous
+            </Button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <Button 
+              variant="edit"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
+            >
+              Next &rarr;
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* ... (Modals remain the same) ... */}
-      {isEditModalOpen && editingMed && (
-        <Modal 
-            onClose={() => setIsEditModalOpen(false)} 
-            title={`Edit ${editingMed.name}`}
-        >
-          <form onSubmit={handleUpdateSubmit} className="edit-form">
-            <div className="form-group">
-              <label>Name</label>
-              <input type="text" name="name" value={editingMed.name} onChange={handleEditFormChange} required />
-            </div>
-            <div className="form-group">
-              <label>Quantity</label>
-              <input type="number" name="quantity" min="0" value={editingMed.quantity} onChange={handleEditFormChange} required />
-            </div>
-            <div className="form-group">
-              <label>Price ($)</label>
-              <input type="number" name="price" step="0.01" min="0" value={editingMed.price} onChange={handleEditFormChange} required />
-            </div>
-            <button type="submit" className="submit-btn">Save Changes</button>
-            {editFormError && <p className="form-error">{editFormError}</p>}
-          </form>
-        </Modal>
-      )}
+      {/* Delete Overlay Modal */}
       {deleteConfirmation && (
-        <Modal 
-            onClose={() => setDeleteConfirmation(null)} 
-            title="Confirm Deletion"
-        >
-          <p className="p-4 text-center">Are you sure you want to delete <strong>{deleteConfirmation.name}</strong> from stock? This action cannot be undone.</p>
-          <div className="flex justify-center gap-4 p-4 border-t">
-            <button 
-                onClick={handleConfirmedDelete} 
-                className="delete-btn"
-            >
-                Yes, Delete
-            </button>
-            <button 
-                onClick={() => setDeleteConfirmation(null)} 
-                className="edit-btn"
-            >
-                Cancel
-            </button>
+        <Modal onClose={() => setDeleteConfirmation(null)}>
+          <div style={{ padding: '10px' }}>
+            <h3>Remove Stock Item Listing</h3>
+            <p style={{ margin: '15px 0' }}>
+              Are you sure you want to permanently delete the profile for <strong>{deleteConfirmation.name}</strong>?
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <Button onClick={confirmDelete} variant="delete">Yes, Delete</Button>
+              <Button onClick={() => setDeleteConfirmation(null)} variant="edit">Cancel</Button>
+            </div>
           </div>
         </Modal>
       )}
 
+      {/* Add Medicine Overlay Modal */}
       {isAddModalOpen && (
-        <Modal 
-            onClose={() => setIsAddModalOpen(false)} 
-            title="Add New Medicine to Stock"
-        >
+        <Modal onClose={() => setIsAddModalOpen(false)}>
           <div className="add-medicine-form-modal"> 
+            <h3>Add New Medicine to Stock</h3>
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Name</label>
+              <div className="form-group span-two">
+                <label>Medicine / Item Generic Name</label>
                 <input type="text" name="name" value={newMed.name} onChange={handleFormChange} required />
               </div>
               <div className="form-group">
-                <label>Quantity</label>
+                <label>Initial Quantity</label>
                 <input type="number" name="quantity" min="0" value={newMed.quantity} onChange={handleFormChange} required />
               </div>
               <div className="form-group">
-                <label>Price ($)</label>
+                <label>Unit Price ($)</label>
                 <input type="number" name="price" step="0.01" min="0" value={newMed.price} onChange={handleFormChange} required />
               </div>
-              <button type="submit" className="submit-btn">Add to Stock</button>
-              {formError && <p className="form-error">{formError}</p>}
+              
+              {formError && <p className="form-error span-two">{formError}</p>}
+              
+              <Button type="submit" variant="submit" className="span-two" style={{ marginTop: '10px' }}>
+                Add to Stock
+              </Button>
             </form>
           </div>
         </Modal>
       )}
 
+      {/* Edit Medicine Overlay Modal */}
+      {isEditModalOpen && editingMed && (
+        <Modal onClose={() => setIsEditModalOpen(false)}>
+          <div className="add-medicine-form-modal"> 
+            <h3>Modify Stock Levels</h3>
+            <form onSubmit={handleEditSubmit}>
+              <div className="form-group span-two">
+                <label>Medicine / Item Generic Name</label>
+                <input type="text" value={editingMed.name} onChange={e => setEditingMed({...editingMed, name: e.target.value})} required />
+              </div>
+              <div className="form-group">
+                <label>Current Quantity</label>
+                <input type="number" min="0" value={editingMed.quantity} onChange={e => setEditingMed({...editingMed, quantity: e.target.value})} required />
+              </div>
+              <div className="form-group">
+                <label>Unit Price ($)</label>
+                <input type="number" step="0.01" min="0" value={editingMed.price} onChange={e => setEditingMed({...editingMed, price: e.target.value})} required />
+              </div>
+              
+              {editFormError && <p className="form-error span-two">{editFormError}</p>}
+              
+              <Button type="submit" variant="submit" className="span-two" style={{ marginTop: '10px' }}>
+                Save Changes
+              </Button>
+            </form>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

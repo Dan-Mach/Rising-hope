@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { patientService } from '../api/patientService';
 import Modal from '../components/common/Modal';
+import Button from '../components/common/Button'; // Assuming unified shared Button is used
 import './Patients.css';
 
 function Patients() {
@@ -24,7 +25,6 @@ function Patients() {
   const [totalPatients, setTotalPatients] = useState(0);
   const [sortOrder, setSortOrder] = useState('name__first_name'); 
 
-  // Defined outside useEffect for reuse
   const fetchPatients = async () => {
     try {
       setLoading(true);
@@ -32,7 +32,7 @@ function Patients() {
       setPatients(response.data.results || response.data || []);
       setTotalPatients(response.data.count || 0);
       setError(null);
-    } catch{
+    } catch {
       setError('Failed to fetch patients. Your session may be expired.');
     } finally {
       setLoading(false);
@@ -43,51 +43,37 @@ function Patients() {
     fetchPatients();
   }, [currentPage, pageSize, sortOrder]);
 
-  // ... (handleFormChange, handleSubmit, handleDeleteRequest, handleConfirmedDelete remain the same) ...
   const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setNewPatient(prev => ({ ...prev, [name]: value }));
+    setNewPatient({
+      ...newPatient,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError(null);
-    setSuccessMessage(null);
-
-    const payload = {
-      name: {
-        first_name: newPatient.first_name,
-        second_name: newPatient.second_name,
-        age: newPatient.age,
-        gender: newPatient.gender
-      }
-    };
-
     try {
-      await patientService.createPatient(payload);
+      await patientService.createPatient(newPatient);
+      setSuccessMessage(`Patient "${newPatient.first_name}" registered successfully.`);
+      setIsAddModalOpen(false);
       setNewPatient({ first_name: '', second_name: '', age: '', gender: 'Male' });
-      setSuccessMessage(`Patient registered successfully.`);
-      setIsAddModalOpen(false); 
       fetchPatients();
-    } catch {
-      setFormError('Failed to create patient. Check the details.');
+    } catch (err) {
+      setFormError(err.response?.data?.detail || 'Failed to create patient record.');
     }
   };
 
-  const handleDeleteRequest = (patient) => {
+  const handleDeleteClick = (patient) => {
     setDeleteConfirmation(patient);
   };
-  
-  const handleConfirmedDelete = async () => {
-    if (!deleteConfirmation) return;
-    const id = deleteConfirmation.id;
-    setDeleteConfirmation(null);
-    setError(null);
-    setSuccessMessage(null);
 
+  const confirmDelete = async () => {
+    if (!deleteConfirmation) return;
     try {
-      await patientService.deletePatient(id);
-      setSuccessMessage(`Patient deleted successfully.`);
+      await patientService.deletePatient(deleteConfirmation.id);
+      setSuccessMessage('Patient record deleted successfully.');
+      setDeleteConfirmation(null);
       fetchPatients();
     } catch {
       setError('Failed to delete patient record.');
@@ -95,99 +81,125 @@ function Patients() {
   };
 
   const totalPages = Math.ceil(totalPatients / pageSize);
-  const handlePageSizeChange = (e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); };
-  const handleSortChange = (e) => { setSortOrder(e.target.value); setCurrentPage(1); };
-  const handleNextPage = () => { if (currentPage < totalPages) setCurrentPage(currentPage + 1); };
-  const handlePrevPage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1); };
 
   return (
-    <div className="patients-page">
-      <h2> Patient Record Management</h2>
-      
-      {error && <p className="page-error">Error: {error}</p>}
-      {successMessage && <p className="page-success">{successMessage}</p>}
-
-      <div className="patient-header">
-        <button onClick={fetchPatients} className="edit-btn" style={{ marginRight: '10px' }}>
-           ↻ Refresh List
-        </button>
-        <button onClick={() => setIsAddModalOpen(true)} className="submit-btn">
+    <div className="patient-page">
+      {/* Sleek Horizontal Header Section */}
+      <div className="patient-header-row">
+        <h2>Patient Registry</h2>
+        <Button onClick={() => setIsAddModalOpen(true)} variant="submit">
           + Register New Patient
-        </button>
+        </Button>
       </div>
 
-      <div className="patient-list-container">
-        {/* ... Pagination Controls ... */}
-        <div className="pagination-controls">
-          <div className="form-group sort-controls">
-            <label htmlFor="sortOrder">Sort by:</label>
-            <select id="sortOrder" value={sortOrder} onChange={handleSortChange}>
-              <option value="name__first_name">Name (A-Z)</option>
-              <option value="-name__first_name">Name (Z-A)</option>
-              <option value="-register_date">Date Registered (Newest)</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="pageSize">Items per page:</label>
-            <select id="pageSize" value={pageSize} onChange={handlePageSizeChange}>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-          </div>
-          <span className="page-info">
-            {totalPages > 1 ? `Page ${currentPage} of ${totalPages} | ` : ''}
-            {totalPatients} total patients
-          </span>
-          <div className="pagination-buttons">
-            <button onClick={handlePrevPage} disabled={currentPage === 1} className="pagination-btn">&larr; Previous</button>
-            <button onClick={handleNextPage} disabled={currentPage === totalPages} className="pagination-btn">Next &rarr;</button>
-          </div>
-        </div>
+      {successMessage && <p className="page-success">{successMessage}</p>}
+      {error && <p className="page-error">{error}</p>}
 
-        <table className="patients-table">
+      <div className="patient-list-container">
+        <table className="patient-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Patient ID</th>
               <th>Full Name</th>
               <th>Age</th>
               <th>Gender</th>
-              <th>Registered On</th>
-              <th>Actions</th> 
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {loading && <tr><td colSpan="6">Loading patients...</td></tr>}
-            {!loading && patients.length === 0 && <tr><td colSpan="6">No records found.</td></tr>}
-            {!loading && patients.map((patient) => (
-              <tr key={patient.id}>
-                <td>{patient.id}</td>
-                <td>{patient.name?.first_name} {patient.name?.second_name}</td>
-                <td>{patient.name?.age || 'N/A'}</td>
-                <td>{patient.name?.gender || 'N/A'}</td>
-                <td>{new Date(patient.register_date).toLocaleDateString()}</td>
-                <td>
-                  <button onClick={() => handleDeleteRequest(patient)} className="delete-btn">Delete Record</button>
-                </td>
+            {loading ? (
+              /* Skeleton Placeholder Rows */
+              Array.from({ length: 5 }).map((_, index) => (
+                <tr key={`skeleton-${index}`} className="skeleton-row">
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '50px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '150px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '40px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '60px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-btn" style={{ width: '140px' }}></div></td>
+                </tr>
+              ))
+            ) : patients.length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>No patients registered yet.</td>
               </tr>
-            ))}
+            ) : (
+              patients.map((patient) => (
+                <tr key={patient.id}>
+                  <td>{patient.id.toString().slice(-4)}</td>
+                  <td>
+                    <strong>
+                      {patient.name?.first_name || patient.first_name} {patient.name?.second_name || patient.second_name || ''}
+                    </strong>
+                  </td>
+                  <td>{patient.name?.age || patient.age || 'N/A'}</td>
+                  <td>
+                    <span className="gender-badge">
+                      {patient.name?.gender || patient.gender}
+                    </span>
+                  </td>
+                  <td>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <Button variant="edit" onClick={() => alert('Edit function placeholder')} style={{ padding: '4px 8px', fontSize: '0.85rem' }}>
+                        Edit Profile
+                      </Button>
+                      <Button variant="delete" onClick={() => handleDeleteClick(patient)} style={{ padding: '4px 8px', fontSize: '0.85rem' }}>
+                        Delete
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
+
+        {!loading && totalPages > 1 && (
+          <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', gap: '5px', alignItems: 'center' }}>
+            <Button 
+              variant="edit"
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
+            >
+              &larr; Previous
+            </Button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <Button 
+              variant="edit"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
+            >
+              Next &rarr;
+            </Button>
+          </div>
+        )}
       </div>
-      
-      {/* ... Modals (Delete & Add) remain the same ... */}
+
       {deleteConfirmation && (
-        <Modal onClose={() => setDeleteConfirmation(null)} title="Confirm Deletion">
-          <p className="p-4 text-center">Delete record for <strong>{deleteConfirmation.name?.first_name}</strong>?</p>
-          <div className="flex justify-center gap-4 p-4 border-t">
-            <button onClick={handleConfirmedDelete} className="delete-btn">Yes, Delete Record</button>
-            <button onClick={() => setDeleteConfirmation(null)} className="edit-btn">Cancel</button>
+        <Modal onClose={() => setDeleteConfirmation(null)}>
+          <div style={{ padding: '10px' }}>
+            <h3>Confirm Patient Record Deletion</h3>
+            <p style={{ margin: '15px 0' }}>
+              Are you sure you want to permanently delete the health records for{' '}
+              <strong>{deleteConfirmation.first_name}</strong>? This action cannot be reversed.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <Button onClick={confirmDelete} variant="delete">
+                Yes, Delete
+              </Button>
+              <Button onClick={() => setDeleteConfirmation(null)} variant="edit">
+                Cancel
+              </Button>
+            </div>
           </div>
         </Modal>
       )}
 
       {isAddModalOpen && (
-        <Modal onClose={() => setIsAddModalOpen(false)} title="Register New Patient">
+        <Modal onClose={() => setIsAddModalOpen(false)}>
           <div className="add-patient-form-modal">
+            <h3>Register New Patient</h3>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label>First Name*</label>
@@ -209,8 +221,12 @@ function Patients() {
                   <option value="Other">Other</option>
                 </select>
               </div>
-              <button type="submit" className="submit-btn">Register Patient</button>
-              {formError && <p className="form-error">{formError}</p>}
+              
+              {formError && <p className="form-error span-two">{formError}</p>}
+
+              <Button type="submit" variant="submit" className="span-two" style={{ marginTop: '10px' }}>
+                Register Patient
+              </Button>
             </form>
           </div>
         </Modal>
