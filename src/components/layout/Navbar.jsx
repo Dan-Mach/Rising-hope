@@ -15,20 +15,9 @@ function Navbar() {
   const [isFocused, setIsFocused] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Map your application routes here
-  const navLinks = [
-    { name: 'Dashboard', path: '/' },
-    { name: 'Patients Registry', path: '/patients' },
-    { name: 'Triage Center', path: '/triage' },
-    { name: 'Consultations', path: '/consultation' },
-    { name: 'Laboratory', path: '/laboratory' },
-    { name: 'Pharmacy', path: '/pharmacy' },
-    { name: 'Inventory Management', path: '/inventory' },
-    { name: 'Billing Records', path: '/billing' },
-    { name: 'Staff Management', path: '/staff' },
-    { name: 'Account Settings', path: '/settings' },
-    { name: 'Edit Profile', path: '/profile' }
-  ];
+// Inside your Navbar function in Navbar.jsx
+
+
 
   const searchHints = [
     "Search for data, or files...",
@@ -71,7 +60,31 @@ function Navbar() {
   const role = getUserRole();
   const username = getUsername();
   const profilePicUrl = getProfilePic();
+  // Update your allLinks array
+  const allLinks = [
+    { name: 'Dashboard', path: '/' },
+    { name: 'Patients Registry', path: '/patients' },
+    { name: 'Triage Center', path: '/triage' },
+    { name: 'Consultations', path: '/consultation' },
+    { name: 'Laboratory', path: '/laboratory' },
+    { name: 'Pharmacy', path: '/pharmacy' },
+    // Define allowed roles for Inventory
+    { name: 'Inventory Management', path: '/inventory', allowedRoles: ['ADMIN', 'STORE_MANAGER'] },
+    { name: 'Billing Records', path: '/billing' },
+    // Define allowed roles for Staff
+    { name: 'Staff Management', path: '/staff', allowedRoles: ['ADMIN'] },
+    { name: 'Account Settings', path: '/settings' },
+    { name: 'Edit Profile', path: '/profile' }
+  ];
 
+  const navLinks = allLinks.filter(link => {
+    // If the link has specific allowed roles, check if current role is included
+    if (link.allowedRoles) {
+      return link.allowedRoles.includes(role);
+    }
+    // Otherwise, it's visible to everyone
+    return true;
+  });
   const handleLogout = () => {
     logout();
     navigate('/login');
