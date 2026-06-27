@@ -4,6 +4,7 @@ import { prescriptionService } from '../api/prescriptionService';
 import { inventoryService } from '../api/inventoryService'; 
 import Modal from '../components/common/Modal';
 import './Dispense.css';
+import '../App.css';
 
 function Dispense() {
   const [prescriptions, setPrescriptions] = useState([]);

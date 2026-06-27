@@ -11,10 +11,20 @@ function Staff() {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  const [newEmployee, setNewEmployee] = useState({
-    username: '', password: '', first_name: '', second_name: '',
-    age: '', gender: 'Male', phone_number: '', employee_type: 'DOCTOR', email: ''
-  });
+  // Clean initial state representation
+  const initialFormState = {
+    username: '', 
+    password: '', 
+    first_name: '', 
+    second_name: '',
+    age: '', 
+    gender: 'Male', 
+    phone_number: '', 
+    employee_type: 'DOCTOR', 
+    email: ''
+  };
+
+  const [newEmployee, setNewEmployee] = useState(initialFormState);
   const [formError, setFormError] = useState(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState(null);
 
@@ -48,18 +58,22 @@ function Staff() {
       [e.target.name]: e.target.value
     });
   };
-
-  const handleAddEmployeeSubmit = async (e) => {
+const handleAddEmployeeSubmit = async (e) => {
+    // 1. Force absolute prevention of HTML native form bubble-up reloads
     e.preventDefault();
+    e.stopPropagation();
     setFormError(null);
 
-    // Corrected Mapping: email lives at the root level, alongside employee_type
     const backendData = {
+      // Keep it here if the root profile table requires it
       employee_type: newEmployee.employee_type,
-      email: newEmployee.email, // <--- Lifted out of 'user' to the root level
+      email: newEmployee.email, 
       user: {
         username: newEmployee.username,
         password: newEmployee.password,
+        
+        employee_type: newEmployee.employee_type, 
+
         name: {
           first_name: newEmployee.first_name,
           second_name: newEmployee.second_name || '',
@@ -71,31 +85,41 @@ function Staff() {
     };
 
     try {
-      await userService.createEmployee(backendData);
-      setSuccessMessage(`Employee account "${newEmployee.username}" provisioned successfully.`);
-      setIsAddModalOpen(false);
-      setNewEmployee({
-        username: '', password: '', first_name: '', second_name: '',
-        age: '', gender: 'Male', phone_number: '', employee_type: 'DOCTOR', email: ''
-      });
-      fetchStaff();
-    } catch (err) {
-      const errorData = err.response?.data;
+      console.log("OUTBOUND MULTI-TABLE PAYLOAD DEPLOYED:", backendData);
+      const response = await userService.createEmployee(backendData);
       
-      // Unpack validation responses accurately for user feedback
-      if (errorData?.email) {
-        setFormError(`Email Error: ${errorData.email[0]}`);
-      } else if (errorData?.user?.name?.first_name) {
-        setFormError(`First Name: ${errorData.user.name.first_name[0]}`);
-      } else if (errorData?.user?.username) {
-        setFormError(`Username: ${errorData.user.username[0]}`);
-      } else if (errorData?.employee_type) {
-        setFormError(`Role Error: ${errorData.employee_type[0]}`);
-      } else {
-        setFormError(errorData?.detail || 'Validation failed. Verify the form fields.');
+      // Absolute verification of success before structural reset
+      if (response && (response.status === 200 || response.status === 201)) {
+        setSuccessMessage(`Employee account "${newEmployee.username}" provisioned successfully.`);
+        setIsAddModalOpen(false);
+        setNewEmployee(initialFormState); 
+        fetchStaff();
       }
+    } catch (err) {
+      console.error("CRITICAL EXCEPTION REVEALED:", err);
+      
+      // 2. Extract error variations directly out of Axios or native Fetch instances
+      const responseBody = err.response?.data;
+      const responseStatus = err.response?.status;
+      const genericMessage = err.message;
+
+      let printedErrorString = `[Status ${responseStatus || 'Unknown'}] `;
+
+      if (responseBody) {
+        printedErrorString += typeof responseBody === 'string' 
+          ? responseBody 
+          : JSON.stringify(responseBody);
+      } else {
+        printedErrorString += `System Exception Message: ${genericMessage || 'No descriptive error token extracted.'}`;
+      }
+
+      // 3. Inject explicit alert call to freeze execution thread if state is wiping
+      alert(`STOP DETECTED!\nBackend Database Rejected Save Transaction.\n\nReason:\n${printedErrorString}`);
+      
+      setFormError(`Database Validation Error: ${printedErrorString}`);
     }
   };
+
   const handleDeleteClick = (employee) => {
     setDeleteConfirmation(employee);
   };
@@ -108,7 +132,7 @@ function Staff() {
       setDeleteConfirmation(null);
       fetchStaff();
     } catch (err) {
-      setError('Failed to terminate target user credentials profile.');
+      setError('Failed to terminate target user credentials profile.', err);
     }
   };
 
@@ -127,7 +151,7 @@ function Staff() {
       {error && <p className="page-error">{error}</p>}
 
       <div className="staff-list-container">
-        <table className="staff-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className="staff-table">
           <thead>
             <tr>
               <th>Username</th>
@@ -150,7 +174,7 @@ function Staff() {
               ))
             ) : employees.length === 0 ? (
               <tr>
-                <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>No active team members registered.</td>
+                <td colSpan="5" className="text-center">No active team members registered.</td>
               </tr>
             ) : (
               employees.map((emp) => {
@@ -164,14 +188,14 @@ function Staff() {
                       </strong>
                     </td>
                     <td>
-                      <span className="role-badge">
+                      <span className={`role-badge role-${activeRole.toLowerCase()}`}>
                         {activeRole.replace('_', ' ')}
                       </span>
                     </td>
                     <td>{emp.user?.name?.phone_number || 'N/A'}</td>
                     <td>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <Button variant="delete" onClick={() => handleDeleteClick(emp)} style={{ padding: '4px 8px', fontSize: '0.85rem' }}>
+                      <div className="action-button-group">
+                        <Button variant="delete" onClick={() => handleDeleteClick(emp)}>
                           Deactivate
                         </Button>
                       </div>
@@ -184,12 +208,11 @@ function Staff() {
         </table>
 
         {!loading && totalPages > 1 && (
-          <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', gap: '5px', alignItems: 'center' }}>
+          <div className="pagination-controls">
             <Button 
               variant="edit"
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
             >
               &larr; Previous
             </Button>
@@ -198,7 +221,6 @@ function Staff() {
               variant="edit"
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
             >
               Next &rarr;
             </Button>
@@ -208,13 +230,13 @@ function Staff() {
 
       {deleteConfirmation && (
         <Modal onClose={() => setDeleteConfirmation(null)}>
-          <div style={{ padding: '10px' }}>
+          <div className="delete-modal-inner">
             <h3>Confirm Credential Deactivation</h3>
-            <p style={{ margin: '15px 0' }}>
+            <p>
               Are you sure you want to completely suspend clinical platform access permissions for{' '}
               <strong>{deleteConfirmation.user?.username}</strong>? This workflow cannot be undone.
             </p>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+            <div className="modal-actions">
               <Button onClick={confirmDelete} variant="delete">
                 Yes, Deactivate
               </Button>
@@ -282,7 +304,7 @@ function Staff() {
 
               {formError && <p className="form-error span-two">{formError}</p>}
 
-              <Button type="submit" variant="submit" className="span-two" style={{ marginTop: '10px' }}>
+              <Button type="submit" variant="submit" className="span-two">
                 Add Employee
               </Button>
             </form>

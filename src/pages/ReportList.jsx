@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { visitService } from '../api/visitService';
 import Button from '../components/common/Button'; // Integrated standard Button component
 import './ReportList.css'; 
+import '../App.css';
 
 function ReportList() {
   const [reports, setReports] = useState([]);

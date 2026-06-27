@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Modal from '../components/common/Modal'; 
 import './Triage.css'; 
+import '../App.css';
 
 function TriageQueue() {
   const [queue, setQueue] = useState([]);

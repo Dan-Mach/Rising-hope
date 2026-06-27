@@ -4,6 +4,7 @@ import { patientService } from '../api/patientService';
 import Modal from '../components/common/Modal';
 import Button from '../components/common/Button'; 
 import './Patients.css';
+import '../App.css';
 
 function Patients() {
   const [patients, setPatients] = useState([]);

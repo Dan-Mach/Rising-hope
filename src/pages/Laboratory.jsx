@@ -4,6 +4,7 @@ import { labService } from '../api/labService';
 import { useAuth } from '../hooks/useAuth';
 import Modal from '../components/common/Modal';
 import './Laboratory.css';
+import '../App.css';
 
 function Laboratory() {
   const { user } = useAuth();

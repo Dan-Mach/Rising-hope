@@ -11,6 +11,7 @@ import { accountService } from '../api/accountService';
 import { useAuth } from '../hooks/useAuth'; 
 import { Link } from 'react-router-dom';
 import './Dashboard.css';
+import '../App.css';
 
 // Reusable Skeleton Component for Dashboard Statistic Cards
 const SkeletonCard = () => (

@@ -1,6 +1,7 @@
 // src/pages/Settings.jsx
 import React from 'react';
 import './Settings.css';
+import '../App.css';
 
 function Settings() {
 

@@ -5,12 +5,18 @@ function Button({
   children, 
   onClick, 
   type = 'button', 
-  variant = 'submit', 
+  variant = 'submit', // Options: 'submit', 'edit', 'delete'
   className = '', 
   style,
+  disabled,
   ...props 
 }) {
-  const baseClass = `${variant}-btn ${className}`.trim();
+  // Dynamically maps base variants and active state triggers
+  const baseClass = [
+    `${variant}-btn`,
+    disabled ? 'btn-disabled' : '',
+    className
+  ].filter(Boolean).join(' ');
 
   return (
     <button 
@@ -18,6 +24,7 @@ function Button({
       onClick={onClick} 
       className={baseClass} 
       style={style}
+      disabled={disabled}
       {...props}
     >
       {children}

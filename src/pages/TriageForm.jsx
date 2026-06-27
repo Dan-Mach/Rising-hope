@@ -4,6 +4,7 @@ import { patientService } from '../api/patientService';
 import { visitService } from '../api/visitService';
 import { useParams, useNavigate } from 'react-router-dom';
 import './Triage.css'; 
+import '../App.css';
 
 function TriageForm() {
   const [patient, setPatient] = useState(null);

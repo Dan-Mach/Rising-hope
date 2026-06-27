@@ -4,6 +4,7 @@ import { accountService } from '../api/accountService';
 import Modal from '../components/common/Modal';
 import Button from '../components/common/Button'; 
 import './Accounts.css';
+import '../App.css';
 
 function Accounts() {
   const [invoices, setInvoices] = useState([]);

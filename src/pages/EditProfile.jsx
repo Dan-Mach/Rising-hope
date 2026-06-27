@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { userService } from '../api/userService';
 import { useNavigate } from 'react-router-dom';
 import './EditProfile.css';
+import '../App.css';
 
 function EditProfile() {
   const { user, setUser } = useAuth(); 

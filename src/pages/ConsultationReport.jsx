@@ -5,6 +5,7 @@ import { visitService } from '../api/visitService';
 import { labService } from '../api/labService'; 
 import Button from '../components/common/Button'; 
 import './ConsultationReport.css'; 
+import '../App.css';
 
 function ConsultationReport() {
   const { visitId } = useParams();

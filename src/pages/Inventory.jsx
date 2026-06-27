@@ -4,6 +4,7 @@ import { inventoryService } from '../api/inventoryService';
 import Modal from '../components/common/Modal';
 import Button from '../components/common/Button'; // Shared custom UI button element
 import './Inventory.css';
+import '../App.css';
 
 function Inventory() {
   const [medicines, setMedicines] = useState([]);

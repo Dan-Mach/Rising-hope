@@ -4,6 +4,7 @@ import { wardService } from '../api/wardService';
 import { visitService } from '../api/visitService';
 import Modal from '../components/common/Modal';
 import './WardDashboard.css';
+import '../App.css';
 
 function WardDashboard() {
   // 1. Define all state variables at the top

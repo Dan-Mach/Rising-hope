@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Modal from '../components/common/Modal'; 
 import Button from '../components/common/Button'; // Unified Button Component
 import './Prescriptions.css';
+import '../App.css';
 
 function Prescriptions() {
   const [myPrescriptions, setMyPrescriptions] = useState([]);
