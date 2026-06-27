@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { accountService } from '../api/accountService';
 import Modal from '../components/common/Modal';
+import Button from '../components/common/Button'; // Reusable component imported here
 import './Accounts.css';
 
 function Accounts() {
@@ -12,7 +13,7 @@ function Accounts() {
 
   // Pagination & Sorting
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize] = useState(20);
   const [totalInvoices, setTotalInvoices] = useState(0);
   const [filterStatus, setFilterStatus] = useState(''); // '' = All, 'PENDING', 'PAID'
 
@@ -37,8 +38,7 @@ function Accounts() {
       setTotalInvoices(res.data.count || 0);
       setError(null);
     } catch (err) {
-      console.error(err);
-      setError('Failed to load invoices.');
+      setError('Failed to load accounts invoices.', err);
     } finally {
       setLoading(false);
     }
@@ -46,115 +46,164 @@ function Accounts() {
 
   const handleOpenPayment = (invoice) => {
     setSelectedInvoice(invoice);
-    // Default to the remaining balance
-    setPaymentData({ 
-      amount: invoice.balance, 
-      method: 'CASH', 
-      reference_number: '' 
+    setPaymentData({
+      amount: invoice.balance, // Default to full outstanding balance
+      method: 'CASH',
+      reference_number: ''
     });
     setIsPaymentModalOpen(true);
-    setSuccess(null);
-    setError(null);
   };
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedInvoice) return;
-
     try {
-      await accountService.recordPayment(selectedInvoice.id, paymentData);
-      setSuccess(`Payment of ${paymentData.amount} recorded successfully.`);
+      setError(null);
+      setSuccess(null);
+      await accountService.createPayment(selectedInvoice.id, {
+        amount: parseFloat(paymentData.amount),
+        method: paymentData.method,
+        reference_number: paymentData.reference_number
+      });
+      setSuccess(`Payment recorded successfully for Invoice #${selectedInvoice.id}`);
       setIsPaymentModalOpen(false);
-      fetchInvoices(); // Refresh list
+      fetchInvoices(); // Refresh values
     } catch (err) {
-      console.error('Payment Failed:', err);
-      alert('Payment Failed: ' + (err.response?.data?.detail || 'Check values'));
+      setError(err.response?.data?.detail || 'Failed to process payment.');
     }
   };
 
-  // Pagination Logic
   const totalPages = Math.ceil(totalInvoices / pageSize);
-  const handleNext = () => currentPage < totalPages && setCurrentPage(curr => curr + 1);
-  const handlePrev = () => currentPage > 1 && setCurrentPage(curr => curr - 1);
 
   return (
     <div className="accounts-page">
-      <h2> Accounts & Billing</h2>
-      
-      {success && <p className="page-success">{success}</p>}
-      {error && <p className="page-error">{error}</p>}
-
-      <div className="accounts-list-container">
-        {/* Controls */}
-        <div className="pagination-controls">
-          <div className="form-group">
-            <label>Filter Status:</label>
-            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-              <option value="">All</option>
-              <option value="PENDING">Pending</option>
-              <option value="PARTIAL">Partial</option>
-              <option value="PAID">Paid</option>
-            </select>
-          </div>
-          <span className="page-info">
-            {totalInvoices} Invoices Found | Page {currentPage} of {totalPages || 1}
-          </span>
-          <div className="pagination-buttons">
-            <button onClick={handlePrev} disabled={currentPage === 1} className="pagination-btn">&larr;</button>
-            <button onClick={handleNext} disabled={currentPage === totalPages} className="pagination-btn">&rarr;</button>
-          </div>
-        </div>
-
-        {/* Invoice Table */}
-        <table className="accounts-table">
-          <thead>
-            <tr>
-              <th>Invoice #</th>
-              <th>Patient</th>
-              <th>Total</th>
-              <th>Paid</th>
-              <th>Balance</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && <tr><td colSpan="8">Loading accounts...</td></tr>}
-            {!loading && invoices.length === 0 && <tr><td colSpan="8">No invoices found.</td></tr>}
-            
-            {invoices.map(inv => (
-              <tr key={inv.id} className={`row-${inv.status}`}>
-                <td>#{inv.id}</td>
-                <td>{inv.patient_name}</td>
-                <td><strong>{inv.total_amount}</strong></td>
-                <td className="text-success">{inv.paid_amount}</td>
-                <td className="text-danger">{inv.balance}</td>
-                <td><span className={`status-badge status-${inv.status}`}>{inv.status}</span></td>
-                <td>{new Date(inv.issued_at).toLocaleDateString()}</td>
-                <td>
-                  {inv.status !== 'PAID' && (
-                    <button onClick={() => handleOpenPayment(inv)} className="pay-btn">
-                      Receive Payment
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="page-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <h2>Billing & Accounts Management</h2>
+        {/* Changed Refresh Button */}
+        <Button onClick={fetchInvoices} variant="edit" style={{padding: '8px 15px'}}>
+          ↻ Refresh
+        </Button>
       </div>
 
-      {/* Receive Payment Modal */}
+      {error && <p className="page-error">{error}</p>}
+      {success && <p className="page-success">{success}</p>}
+
+      {/* Filter Tabs */}
+      <div className="filter-tabs" style={{marginBottom: '20px', display: 'flex', gap: '10px'}}>
+        <Button 
+          variant={filterStatus === '' ? 'submit' : 'edit'} 
+          onClick={() => { setFilterStatus(''); setCurrentPage(1); }}
+        >
+          All Invoices
+        </Button>
+        <Button 
+          variant={filterStatus === 'PENDING' ? 'submit' : 'edit'} 
+          onClick={() => { setFilterStatus('PENDING'); setCurrentPage(1); }}
+        >
+          Unpaid / Pending
+        </Button>
+        <Button 
+          variant={filterStatus === 'PAID' ? 'submit' : 'edit'} 
+          onClick={() => { setFilterStatus('PAID'); setCurrentPage(1); }}
+        >
+          Fully Paid
+        </Button>
+      </div>
+
+      {loading ? (
+        <p>Loading billing ledger records...</p>
+      ) : (
+        <>
+          <div className="table-responsive">
+            <table className="accounts-table">
+              <thead>
+                <tr>
+                  <th>Invoice ID</th>
+                  <th>Patient Name</th>
+                  <th>Total Cost</th>
+                  <th>Amount Paid</th>
+                  <th>Outstanding Balance</th>
+                  <th>Status</th>
+                  <th>Issued Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" style={{textAlign: 'center', padding: '20px'}}>No billing ledger invoices found.</td>
+                  </tr>
+                ) : (
+                  invoices.map(invoice => (
+                    <tr key={invoice.id}>
+                      <td>#{invoice.id}</td>
+                      <td><strong>{invoice.patient_name || 'Walk-in Patient'}</strong></td>
+                      <td>${parseFloat(invoice.total_amount).toFixed(2)}</td>
+                      <td>${parseFloat(invoice.amount_paid).toFixed(2)}</td>
+                      <td style={{color: parseFloat(invoice.balance) > 0 ? 'var(--danger)' : 'inherit'}}>
+                        ${parseFloat(invoice.balance).toFixed(2)}
+                      </td>
+                      <td>
+                        <span className={`status-badge ${invoice.status.toLowerCase()}`}>
+                          {invoice.status}
+                        </span>
+                      </td>
+                      <td>{new Date(invoice.issued_at).toLocaleString()}</td>
+                      <td>
+                        {invoice.status !== 'PAID' ? (
+                          /* Changed Collect Payment Button */
+                          <Button variant="submit" onClick={() => handleOpenPayment(invoice)} style={{padding: '5px 10px', fontSize: '0.85rem'}}>
+                            Collect Payment
+                          </Button>
+                        ) : (
+                          <span style={{color: 'green', fontSize: '0.9rem'}}>✓ Settled</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="pagination" style={{marginTop: '20px', display: 'flex', gap: '5px', justifyContent: 'center', alignItems: 'center'}}>
+              {/* Changed Previous Button */}
+              <Button 
+                variant="edit"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                style={{opacity: currentPage === 1 ? 0.5 : 1}}
+              >
+                &larr; Prev
+              </Button>
+              
+              <span>Page {currentPage} of {totalPages}</span>
+              
+              {/* Changed Next Button */}
+              <Button 
+                variant="edit"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                style={{opacity: currentPage === totalPages ? 0.5 : 1}}
+              >
+                Next &rarr;
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Payment Processing Modal Overlay */}
       {isPaymentModalOpen && selectedInvoice && (
-        <Modal onClose={() => setIsPaymentModalOpen(false)} title={`Receive Payment: Invoice #${selectedInvoice.id}`}>
-          <div className="payment-modal-content">
-            <p><strong>Patient:</strong> {selectedInvoice.patient_name}</p>
-            <p><strong>Outstanding Balance:</strong> <span className="text-danger">{selectedInvoice.balance}</span></p>
+        <Modal onClose={() => setIsPaymentModalOpen(false)}>
+          <div className="payment-modal-form">
+            <h3>Record Payment for Invoice #{selectedInvoice.id}</h3>
+            <p style={{marginBottom: '15px'}}>Patient: <strong>{selectedInvoice.patient_name}</strong></p>
             
             <form onSubmit={handlePaymentSubmit}>
               <div className="form-group">
-                <label>Amount to Pay</label>
+                <label>Amount to Pay ($)</label>
                 <input 
                   type="number" 
                   step="0.01"
@@ -187,10 +236,11 @@ function Accounts() {
                   onChange={e => setPaymentData({...paymentData, reference_number: e.target.value})}
                 />
               </div>
-
-              <button type="submit" className="submit-btn" style={{marginTop: '15px', width: '100%'}}>
+              
+              {/* Changed Modal Submit Form Button */}
+              <Button type="submit" variant="submit" style={{marginTop: '15px', width: '100%'}}>
                 Confirm Payment
-              </button>
+              </Button>
             </form>
           </div>
         </Modal>

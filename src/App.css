@@ -37,3 +37,51 @@
   color: #888;
 }
 
+/* Add to your global CSS stylesheet */
+.submit-btn, 
+.edit-btn, 
+.delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 8px; /* Perfectly matching your modal/login theme */
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+/* Primary/Submit Button Action Styling */
+.submit-btn {
+  background-color: var(--primary);
+  color: var(--bg-dark);
+}
+
+/* Edit/Secondary Button Action Styling */
+.edit-btn {
+  background-color: var(--border);
+  color: var(--text);
+}
+
+/* Danger Action Styling */
+.delete-btn {
+  background-color: var(--danger);
+  color: white;
+}
+
+/* Shared Hover States */
+.submit-btn:hover,
+.edit-btn:hover,
+.delete-btn:hover {
+  filter: brightness(0.9);
+}
+
+.submit-btn:active,
+.edit-btn:active,
+.delete-btn:active {
+  transform: scale(0.98);
+}
+

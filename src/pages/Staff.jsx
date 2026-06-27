@@ -9,7 +9,7 @@ function Staff() {
   // ... (State variables remain the same) ...
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [ setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
   const [newEmployee, setNewEmployee] = useState({
