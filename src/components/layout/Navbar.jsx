@@ -15,6 +15,21 @@ function Navbar() {
   const [isFocused, setIsFocused] = useState(false);
   const dropdownRef = useRef(null);
 
+  // Map your application routes here
+  const navLinks = [
+    { name: 'Dashboard', path: '/' },
+    { name: 'Patients Registry', path: '/patients' },
+    { name: 'Triage Center', path: '/triage' },
+    { name: 'Consultations', path: '/consultation' },
+    { name: 'Laboratory', path: '/laboratory' },
+    { name: 'Pharmacy', path: '/pharmacy' },
+    { name: 'Inventory Management', path: '/inventory' },
+    { name: 'Billing Records', path: '/billing' },
+    { name: 'Staff Management', path: '/staff' },
+    { name: 'Account Settings', path: '/settings' },
+    { name: 'Edit Profile', path: '/profile' }
+  ];
+
   const searchHints = [
     "Search for data, or files...",
     "Try searching for records...",
@@ -65,6 +80,18 @@ function Navbar() {
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const closeDropdown = () => setIsDropdownOpen(false);
 
+  const handleSearchSubmit = (e) => {
+      e.preventDefault();
+      const match = navLinks.find(link => 
+        link.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      if (match) {
+        navigate(match.path);
+        setSearchQuery('');
+        setIsFocused(false);
+      }
+    };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -83,20 +110,36 @@ function Navbar() {
         <Link to="/">dimar</Link>
       </div>
 
-      {/* Styled Search Wrapper */}
-      <div className="navbar-search-container">
-        <span className="material-symbols-outlined search-icon">search</span>
+      <form onSubmit={handleSearchSubmit} className="navbar-search-container">
         <input 
           type="text" 
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onBlur={() => setTimeout(() => setIsFocused(false), 200)} // Short delay to let clicks process cleanly
           placeholder={isFocused ? "Type to search..." : searchHints[placeholderIndex]} 
           className="navbar-search-input" 
         />
-        {!isFocused && !searchQuery && <kbd className="search-shortcut-key">/</kbd>}
-      </div>
+        
+        {isFocused && searchQuery && (
+          <ul className="search-results-dropdown">
+            {navLinks.filter(l => l.name.toLowerCase().includes(searchQuery.toLowerCase())).map(link => (
+              <li key={link.path} onClick={() => { navigate(link.path); setSearchQuery(''); }}>
+                {link.name}
+              </li>
+            ))}
+          </ul>
+        )}
+        
+        <button 
+          type="submit" 
+          className="search-icon-btn"
+          aria-label="Submit Search"
+          title="Click to search"
+        >
+          <span className="material-symbols-outlined">search</span>
+        </button>
+      </form>
 
       <ul className="navbar-links">
         <li>
