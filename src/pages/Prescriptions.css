@@ -1,268 +1,234 @@
 /* src/pages/Prescriptions.css */
 
-.prescription-list-container {
+.prescriptions-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+}
+
+.prescriptions-page h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Symmetrical Grid Split Layout - Clears Workspace Vertical Dead Space */
+.prescriptions-layout-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.workspace-panel {
   background-color: var(--bg-light);
   border: 1px solid var(--border-muted);
   border-radius: 8px;
-  padding: 20px;
-  margin-top: 20px;
+  padding: 22px;
+  box-shadow: 0 4px 12px oklch(from var(--text) l c h / 0.02);
 }
 
-/* --- Pagination Controls --- */
-.pagination-controls {
-  display: flex;
-  justify-content: flex-start; 
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px; 
-  padding: 10px 0;
-  margin-bottom: 15px;
-  border-bottom: 1px solid var(--border-muted);
-}
-.pagination-controls .form-group {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 0; 
-}
-.pagination-controls .form-group label {
-  margin-bottom: 0;
-  color: var(--text-muted);
-}
-.pagination-controls .form-group select {
-  padding: 8px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background-color: var(--bg-light);
+.workspace-panel h3 {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  font-size: 1.15rem;
+  font-weight: 600;
   color: var(--text);
+  border-bottom: 1px solid var(--border-muted);
+  padding-bottom: 10px;
 }
-.pagination-controls .page-info {
+
+/* Internal Workspace State Alignment Elements */
+.panel-header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-muted);
+  padding-bottom: 10px;
+}
+
+.panel-header-controls h3 {
+  margin-bottom: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.active-case-banner {
+  background-color: var(--bg);
+  border-left: 4px solid var(--secondary);
+  padding: 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border-muted);
+  border-left: 4px solid var(--secondary);
+}
+
+.active-case-banner h4 {
+  margin: 0 0 4px 0;
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+.active-case-banner p {
+  margin: 0;
   color: var(--text-muted);
-  font-size: 0.9em;
-  font-weight: bold;
-  flex-grow: 1;
+  font-size: 0.9rem;
+}
+
+.empty-panel-state {
   text-align: center;
-}
-.pagination-controls .pagination-buttons { display: flex; gap: 10px; }
-.pagination-btn {
-  padding: 8px 12px;
-  background-color: transparent;
-  color: var(--secondary);
-  border: 1px solid var(--secondary);
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s, color 0.2s;
-}
-.pagination-btn:hover:not(:disabled) {
-  background-color: var(--secondary);
-  color: var(--btn-text-dark);
-}
-.pagination-btn:disabled {
+  padding: 40px 20px;
   color: var(--text-muted);
-  border-color: var(--border-muted);
-  cursor: not-allowed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
 }
 
-.list-section {
-  margin-top: 30px;
+.empty-panel-state p {
+  margin: 0;
+  font-style: italic;
+  font-size: 0.95rem;
 }
 
-/* --- History Table --- */
+/* Pagination Control Blocks */
+.pagination-compact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.compact-page-info {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.compact-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+/* History Audit Data Table Grid */
+.table-responsive-container {
+  overflow-x: auto;
+}
+
 .history-table {
   width: 100%;
   border-collapse: collapse;
 }
-.history-table th,
-.history-table td {
-  border-bottom: 1px solid var(--border-muted);
-  padding: 16px;
-  text-align: left;
-  color: var(--text);
-}
-.history-table tr:last-child td {
-  border-bottom: none;
-}
+
 .history-table th {
   background-color: var(--bg);
   color: var(--text-muted);
-  font-weight: bold;
-}
-
-/* --- Status Badges --- */
-.status-badge {
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: var(--btn-text-dark);
-}
-.status-PENDING { background-color: var(--warning); }
-.status-PAID { background-color: var(--info); }
-.status-DISPENSED { background-color: var(--success); }
-
-/* --- Patient Header --- */
-.prescription-patient-header {
-  background-color: var(--bg);
-  border: 1px solid var(--border-muted);
-  border-left: 5px solid var(--secondary); /* Use secondary color */
-  padding: 15px 20px;
-  border-radius: 8px;
-  margin-bottom: 25px;
-}
-.prescription-patient-header h2 {
-  margin-top: 0;
-  margin-bottom: 5px;
-  font-size: 1.5rem;
-  color: var(--text);
-}
-.prescription-patient-header p {
-  margin: 0;
-  font-size: 1rem;
-  color: var(--text-muted);
-}
-
-/* --- Prescription Form Styles --- */
-.prescription-form .form-section {
-  background: var(--bg-light);
-  border: 1px solid var(--border-muted);
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-.prescription-form .form-section h3 {
-  margin-top: 0;
-  color: var(--text);
-}
-.add-item-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  align-items: flex-start;
-}
-.add-item-form .form-group {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  min-width: 120px;
-}
-.add-item-form .form-group.notes {
-  flex-basis: 100%;
-}
-.add-item-form .form-group label {
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: var(--text-muted);
-}
-.add-item-form .form-group input {
-  padding: 8px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background-color: var(--bg-light);
-  color: var(--text);
-  font-size: 1rem; /* Ensure inputs match */
-}
-
-/* "Add to Prescription" Button */
-.add-item-btn {
-  padding: 10px 15px;
-  background-color: transparent;
-  color: var(--secondary);
-  border: 1px solid var(--secondary);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-  height: min-content;
-  align-self: end; 
-  margin-bottom: 2px; 
-}
-.add-item-btn:hover {
-  background-color: var(--secondary);
-  color: var(--btn-text-dark);
-}
-
-/* "Submit Full Prescription" Button */
-.submit-btn {
-  padding: 10px 15px;
-  background: var(--success-gradient);
-  color: var(--btn-text-dark);
-  border: 1px solid var(--success-dark);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: filter 0.2s;
-}
-.submit-btn:hover { filter: brightness(1.1); }
-
-.submit-prescription-btn {
-  width: 100%;
-  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: left;
   padding: 12px;
+  font-size: 0.9rem;
+  border-bottom: 2px solid var(--border-muted);
 }
 
-/* Autocomplete styles */
-.autocomplete-wrapper {
-  position: relative;
-  flex-grow: 1; 
-}
-.medicine-suggestions {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: var(--bg-light);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  list-style: none;
-  padding: 0;
-  margin: 4px 0 0 0;
-  z-index: 100;
-  max-height: 200px;
-  overflow-y: auto;
-  box-shadow: 0 4px 8px oklch(from var(--text) l c h / 0.1);
-}
-.suggestion-item {
-  padding: 10px 15px;
-  cursor: pointer;
-  color: var(--text);
+.history-table td {
+  padding: 12px;
   border-bottom: 1px solid var(--border-muted);
-}
-.suggestion-item:last-child { border-bottom: none; }
-.suggestion-item:hover { background-color: var(--bg); }
-.suggestion-item span {
-  color: var(--text-muted);
-  font-size: 0.9em;
-  float: right;
+  color: var(--text);
+  font-size: 0.9rem;
+  vertical-align: middle;
 }
 
-/* Final prescription list */
-.prescription-item-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.prescription-item-list li {
-  padding: 10px;
-  border-bottom: 1px solid var(--border-muted);
-  color: var(--text);
-}
-.prescription-item-list li:last-child {
+.history-table tr:last-child td {
   border-bottom: none;
 }
-.prescription-item-list li strong {
-  color: var(--secondary); /* Use secondary color */
+
+/* Status Code Badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
-.prescription-item-list li em {
+.status-PENDING { background-color: oklch(from var(--warning) l c h / 0.12); color: var(--warning); }
+.status-FILLED { background-color: oklch(from var(--success) l c h / 0.12); color: var(--success); }
+.status-ACTIVE { background-color: oklch(from var(--info) l c h / 0.12); color: var(--info); }
+
+/* Modal Content Inner wrappers */
+.review-overlay-content h3 {
+  margin-top: 0;
+  color: var(--text);
+}
+.review-overlay-content p {
   color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+.modal-actions-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
+/* General Layout Message Triggers */
 .page-error {
   color: var(--danger);
-  margin: 10px 0;
-  text-align: center;
-  background-color: oklch(from var(--danger) l c h / 0.1);
-  border: 1px solid oklch(from var(--danger) l c h / 0.3);
+  font-weight: 500;
   padding: 10px;
+  background-color: oklch(from var(--danger) l c h / 0.08);
+  border: 1px solid oklch(from var(--danger) l c h / 0.15);
+  border-radius: 6px;
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.text-center-muted {
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 30px 10px !important;
+}
+
+/* ==========================================================================
+   SHIMMERING SKELETON REVIEW LOADER MODULES
+   ========================================================================== */
+.skeleton-row td {
+  padding: 15px 12px;
+}
+
+.skeleton-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-element {
+  background: linear-gradient(90deg, var(--border-muted) 25%, var(--border) 50%, var(--border-muted) 75%);
+  background-size: 200% 100%;
+  animation: prescriptionPulse 1.5s infinite linear;
   border-radius: 4px;
+}
+
+/* Component Sizing Specs */
+.skeleton-element.form-title { height: 20px; width: 50%; }
+.skeleton-element.form-box.large { height: 95px; border-radius: 6px; }
+.skeleton-element.form-btn { height: 38px; border-radius: 4px; margin-top: 6px; }
+
+.skeleton-element.row-text { height: 11px; }
+.skeleton-element.row-badge { height: 20px; border-radius: 4px; }
+
+@keyframes prescriptionPulse {
+  0% { background-position: 200% 0; opacity: 0.65; }
+  50% { opacity: 0.95; }
+  100% { background-position: -200% 0; opacity: 0.65; }
+}
+
+/* Adaptive Responsive Layout Rule */
+@media (max-width: 850px) {
+  .prescriptions-layout-grid {
+    grid-template-columns: 1fr;
+  }
 }

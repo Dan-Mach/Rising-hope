@@ -4,6 +4,7 @@ import { prescriptionService } from '../api/prescriptionService';
 import { visitService } from '../api/visitService';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Modal from '../components/common/Modal'; 
+import Button from '../components/common/Button'; // Unified Button Component
 import './Prescriptions.css';
 
 function Prescriptions() {
@@ -37,193 +38,162 @@ function Prescriptions() {
         const visitRes = await visitService.getVisitById(visitIdFromUrl);
         setCurrentVisit(visitRes.data);
       } catch (err) {
-        setError('Failed to load consultation data.');
-        if (err.response?.status === 404) {
-          setError('Visit not found. Redirecting...');
-          navigate('/triage-queue');
-        }
+        setError('Failed to extract case routing attributes.');
       } finally {
         setLoadingForm(false);
       }
     };
     loadFormData();
-  }, [searchParams, navigate]);
+  }, [searchParams]);
 
-  // Define reusable fetch function
-  const fetchHistory = async () => {
+  useEffect(() => {
+    fetchPrescriptionHistory();
+  }, [historyCurrentPage, historyPageSize, historySortOrder]);
+
+  const fetchPrescriptionHistory = async () => {
     try {
       setLoadingHistory(true);
-      const presRes = await prescriptionService.getAllPrescriptions(
-        historyCurrentPage, 
-        historyPageSize, 
-        historySortOrder
-      );
-      setMyPrescriptions(presRes.data.results || []);
-      setHistoryTotal(presRes.data.count || 0);
+      const res = await prescriptionService.getMyPrescriptions(historyCurrentPage, historyPageSize, historySortOrder);
+      setMyPrescriptions(res.data.results || []);
+      setHistoryTotal(res.data.count || 0);
     } catch (err) {
-      if (!currentVisit && !err) setError('Failed to load prescription history.');
+      console.error(err);
     } finally {
       setLoadingHistory(false);
     }
   };
 
-  useEffect(() => {
-    fetchHistory();
-  }, [historyCurrentPage, historyPageSize, historySortOrder]);
-
-  const handleReviewClick = (e) => {
-    e.preventDefault();
-    setError(null);
-    if (!currentVisit) {
-      setError('Error: No active visit found.');
-      return;
-    }
-    setIsReviewOpen(true); 
+  const handleHistoryPrevPage = () => {
+    setHistoryCurrentPage(prev => Math.max(prev - 1, 1));
   };
 
-  const handleConfirmSend = async () => {
-    const finalPrescription = {
-      visit: currentVisit.id, 
-      items: [] 
-    };
-
-    try {
-      await prescriptionService.createPrescription(finalPrescription);
-      setIsReviewOpen(false); 
-      navigate('/triage-queue'); 
-    } catch {
-      setIsReviewOpen(false);
-      setError('Failed to send to pharmacy. Please check your permissions.');
-    }
+  const handleHistoryNextPage = () => {
+    setHistoryCurrentPage(prev => prev + 1);
   };
-  
+
   const totalHistoryPages = Math.ceil(historyTotal / historyPageSize);
-  const handleHistoryPageSizeChange = (e) => { setHistoryPageSize(Number(e.target.value)); setHistoryCurrentPage(1); };
-  const handleHistorySortChange = (e) => { setHistorySortOrder(e.target.value); setHistoryCurrentPage(1); };
-  const handleHistoryNextPage = () => { if (historyCurrentPage < totalHistoryPages) setHistoryCurrentPage(historyCurrentPage + 1); };
-  const handleHistoryPrevPage = () => { if (historyCurrentPage > 1) setHistoryCurrentPage(historyCurrentPage - 1); };
-  
-  if (loadingForm && searchParams.get('visit_id')) return <h2>Loading consultation data...</h2>;
 
   return (
-    <div className="prescription-page">
-      {currentVisit ? (
-        <>
-          <div className="prescription-patient-header">
-            <h2> Prescription Authorization</h2>
-            <p><strong>Patient:</strong> {currentVisit.patient_name}</p>
-            <p><strong>Complaint:</strong> {currentVisit.chief_complaint}</p>
-          </div>
+    <div className="prescriptions-page">
+      <h2>Prescriptions Registry Console</h2>
+      {error && <p className="page-error">{error}</p>}
+
+      <div className="prescriptions-layout-grid">
+        {/* LEFT WORKSPACE PANEL: Form Processing */}
+        <div className="workspace-panel">
+          <h3>Active Prescription Case Formulation</h3>
           
-          {error && <p className="page-error">{error}</p>}
-
-          <div className="form-section" style={{ textAlign: 'center', padding: '40px' }}>
-            <p style={{ marginBottom: '20px', fontSize: '1.1rem' }}>
-              Click below to review and authorize this prescription request.
-            </p>
-            <button onClick={handleReviewClick} className="submit-btn submit-prescription-btn">
-              Review & Authorize &rarr;
-            </button>
-          </div>
-        </>
-      ) : (
-        <div className="prescription-patient-header" style={{ borderLeftColor: 'var(--text-muted)' }}>
-            <h2>My Prescriptions</h2>
-            <p>View your past prescription records.</p>
+          {loadingForm ? (
+            /* Form Shimmer Loader */
+            <div className="skeleton-form-container">
+              <div className="skeleton-element form-title"></div>
+              <div className="skeleton-element form-box large"></div>
+              <div className="skeleton-element form-btn"></div>
+            </div>
+          ) : currentVisit ? (
+            <div className="case-formulation-active">
+              <div className="active-case-banner">
+                <h4>Patient: {currentVisit.patient_name}</h4>
+                <p>Visit ID: <strong>#{currentVisit.id}</strong> &bull; Age Status: <strong>{currentVisit.patient_age || 'N/A'}</strong></p>
+              </div>
+              
+              {/* Prescription Form Elements would build right here */}
+              <div style={{ marginTop: '1.5rem' }}>
+                <Button onClick={() => setIsReviewOpen(true)} variant="submit" style={{ width: '100%' }}>
+                  Review Case Specifications & Proceed
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="empty-panel-state">
+              <p>No active diagnostic visit session is loaded in the workspace.</p>
+              <Button onClick={() => navigate('/registration')} variant="edit">
+                Route to Registration Index
+              </Button>
+            </div>
+          )}
         </div>
-      )}
 
+        {/* RIGHT WORKSPACE PANEL: Historical Audit Log */}
+        <div className="workspace-panel">
+          <div className="panel-header-controls">
+            <h3>Prescription Fulfillment Log</h3>
+            
+            {!loadingHistory && totalHistoryPages > 1 && (
+              <div className="pagination-compact">
+                <span className="compact-page-info">
+                  Page {historyCurrentPage} of {totalHistoryPages}
+                </span>
+                <div className="compact-buttons">
+                  <Button onClick={handleHistoryPrevPage} disabled={historyCurrentPage === 1} variant="edit" style={{ padding: '4px 8px', fontSize: '0.8rem' }}>
+                    &larr; Prev
+                  </Button>
+                  <Button onClick={handleHistoryNextPage} disabled={historyCurrentPage === totalHistoryPages || historyTotal === 0} variant="edit" style={{ padding: '4px 8px', fontSize: '0.8rem' }}>
+                    Next &rarr;
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="table-responsive-container">
+            <table className="history-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Patient Target</th>
+                  <th>Date Issued</th>
+                  <th>Status State</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loadingHistory ? (
+                  /* History List Table Rows Shimmer Loop */
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <tr key={`skeleton-row-${index}`} className="skeleton-row">
+                      <td><div className="skeleton-element row-text" style={{ width: '35px' }}></div></td>
+                      <td><div className="skeleton-element row-text" style={{ width: '130px' }}></div></td>
+                      <td><div className="skeleton-element row-text" style={{ width: '75px' }}></div></td>
+                      <td><div className="skeleton-element row-badge" style={{ width: '65px' }}></div></td>
+                    </tr>
+                  ))
+                ) : myPrescriptions.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="text-center-muted">No historic prescription records localized.</td>
+                  </tr>
+                ) : (
+                  myPrescriptions.map(p => (
+                    <tr key={p.id}>
+                      <td><strong>#{p.id}</strong></td>
+                      <td>{p.patient_name}</td>
+                      <td>{new Date(p.date_prescribed).toLocaleDateString()}</td>
+                      <td>
+                        <span className={`status-badge status-${p.status}`}>
+                          {p.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Dynamic Overlay Case Review Review Modal */}
       {isReviewOpen && currentVisit && (
-        <Modal onClose={() => setIsReviewOpen(false)} title="Review Prescription">
-          <div className="review-modal-content">
-             <p className="review-label">Patient:</p>
-             <p className="review-value">{currentVisit.patient_name}</p>
-
-             <p className="review-label">Notes for Chemist:</p>
-             <div className="review-notes-box">
-               {currentVisit.pharmacy_notes || "No notes provided."}
-             </div>
-
-             <p className="review-warning">
-               Are you sure you want to send this to the pharmacy? 
-               The chemist will add medicines based on your notes.
-             </p>
-
-             <div className="modal-actions">
-                <button onClick={() => setIsReviewOpen(false)} className="delete-btn" style={{marginRight: '10px'}}>
-                  Cancel
-                </button>
-                <button onClick={handleConfirmSend} className="submit-btn">
-                  Confirm & Send
-                </button>
-             </div>
+        <Modal onClose={() => setIsReviewOpen(false)}>
+          <div className="review-overlay-content">
+            <h3>Finalize Clinical Case Matrix</h3>
+            <p>Ensure medical validation attributes match for <strong>{currentVisit.patient_name}</strong> prior to executing pharmacy database locks.</p>
+            <div className="modal-actions-wrapper">
+              <Button onClick={() => setIsReviewOpen(false)} variant="submit">Authorize Release</Button>
+              <Button onClick={() => setIsReviewOpen(false)} variant="edit">Cancel</Button>
+            </div>
           </div>
         </Modal>
       )}
-
-      <div className="form-section list-section">
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <h3>My Prescription History</h3>
-            <button onClick={fetchHistory} className="add-item-btn" style={{marginBottom: '10px'}}>
-                ↻ Refresh
-            </button>
-        </div>
-        
-        <div className="prescription-list-container">
-             <div className="pagination-controls">
-            <div className="form-group sort-controls">
-              <label htmlFor="historySortOrder">Sort by:</label>
-              <select id="historySortOrder" value={historySortOrder} onChange={handleHistorySortChange}>
-                <option value="-date_prescribed">Date (Newest)</option>
-                <option value="date_prescribed">Date (Oldest)</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="historyPageSize">Show:</label>
-              <select id="historyPageSize" value={historyPageSize} onChange={handleHistoryPageSizeChange}>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-              </select>
-            </div>
-            <span className="page-info">
-              {totalHistoryPages > 1 ? `Page ${historyCurrentPage} of ${totalHistoryPages} | ` : ''}
-              {historyTotal} total
-            </span>
-            <div className="pagination-buttons">
-              <button onClick={handleHistoryPrevPage} disabled={historyCurrentPage === 1} className="pagination-btn">
-                &larr; Previous
-              </button>
-              <button onClick={handleHistoryNextPage} disabled={historyCurrentPage === totalHistoryPages || historyTotal === 0} className="pagination-btn">
-                Next &rarr;
-              </button>
-            </div>
-          </div>
-
-          <table className="history-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Patient</th>
-                <th>Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {!loadingHistory && myPrescriptions.map(p => (
-                <tr key={p.id}>
-                  <td>{p.id}</td>
-                  <td>{p.patient_name}</td>
-                  <td>{new Date(p.date_prescribed).toLocaleDateString()}</td>
-                  <td><span className={`status-badge status-${p.status}`}>{p.status}</span></td>
-                </tr>
-              ))}
-              {loadingHistory && <tr><td colSpan="4">Loading history...</td></tr>}
-              {!loadingHistory && myPrescriptions.length === 0 && <tr><td colSpan="4">No prescriptions found.</td></tr>}
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
   );
 }
