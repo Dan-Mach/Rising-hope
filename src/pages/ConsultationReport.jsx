@@ -25,28 +25,31 @@ function ConsultationReport() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const visitRes = await visitService.getVisitById(visitId);
-        setVisit(visitRes.data);
-        setNotes(visitRes.data.consultation_notes || ''); 
-        setComplaint(visitRes.data.chief_complaint || ''); 
-        
-        // Fetch Lab Tests
-        const labRes = await labService.getAvailableTests();
-        setAvailableTests(labRes.data.results || labRes.data || []);
-        
-        setError(null);
-      } catch (err) {
-        console.error(err);
-        setError('Failed to load visit details.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [visitId]);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const visitRes = await visitService.getVisitById(visitId);
+      const visitData = visitRes.data;
+      
+      setVisit(visitData);
+      
+      // FIX: Access nested triage data
+      setNotes(visitData.consultation_notes || ''); 
+      setComplaint(visitData.triage?.chief_complaint || ''); // Access from triage object
+      
+      const labRes = await labService.getAvailableTests();
+      setAvailableTests(labRes.data.results || labRes.data || []);
+      
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to fetch consultation data.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchData();
+}, [visitId]);
 
   const handleTestSelection = (e) => {
     const testId = parseInt(e.target.value, 10);
@@ -56,13 +59,15 @@ function ConsultationReport() {
         setSelectedTests(selectedTests.filter(id => id !== testId));
     }
   };
-
   const handleSaveAndPrescribe = async () => {
     try {
       setLoading(true);
-      await visitService.updateVisit(visitId, {
+      // Use saveConsultationReport as defined in your service
+      await visitService.saveConsultationReport(visitId, {
         consultation_notes: notes,
-        chief_complaint: complaint,
+        triage: {
+          chief_complaint: complaint
+        },
         status: 'COMPLETE' 
       });
 
@@ -73,14 +78,14 @@ function ConsultationReport() {
          });
       }
 
-      navigate(`/prescriptions/new?visitId=${visitId}&notes=${encodeURIComponent(pharmacyNotes)}`);
+      navigate(`/prescriptions?visitId=${visitId}&notes=${encodeURIComponent(pharmacyNotes)}`);
     } catch (err) {
-      setError('Failed to finalize consultation records.');
+      console.error("API Update Error:", err.response?.data || err);
+      setError(`Failed to finalize: ${err.response?.data?.detail || err.message}`);
     } finally {
       setLoading(false);
     }
   };
-
   // Modern Shimmering Skeleton Loader Screen Layout (Prevents Layout Jumps & Dead Space)
   if (loading && !visit) {
     return (
@@ -117,12 +122,12 @@ function ConsultationReport() {
       
       {visit && (
         <div className="report-patient-header">
-          <h3>Patient: {visit.patient_name}</h3>
-          <p>Age: <strong>{visit.patient_age}</strong> &bull; Gender: <strong>{visit.patient_gender}</strong></p>
+          <h3>Patient: {visit?.patient_name}</h3>
           <div className="vitals-sub-bar">
-            <span><strong>BP:</strong> {visit.bp || 'N/A'}</span>
-            <span><strong>Temp:</strong> {visit.temperature ? `${visit.temperature}°C` : 'N/A'}</span>
-            <span><strong>Weight:</strong> {visit.weight ? `${visit.weight}kg` : 'N/A'}</span>
+            <span><strong>BP:{visit?.triage?.bp_systolic || '--'}/{visit?.triage?.bp_diastolic || '--'}</strong></span>
+            <span><strong>Temp: {visit?.triage?.body_temp}</strong></span>
+            <span><strong>Weight: {visit?.triage?.weight ? `${visit?.triage?.weight}kg` : 'N/A'}</strong> </span>
+            <span><strong>Heart Rate: {visit?.triage?.heart_rate || '--'}</strong></span>
           </div>
         </div>
       )}
@@ -131,7 +136,6 @@ function ConsultationReport() {
         <div className="report-section">
           <h3>1. Chief Complaint</h3>
           <input 
-            type="text" 
             className="report-input-field"
             value={complaint} 
             onChange={(e) => setComplaint(e.target.value)} 
