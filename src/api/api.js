@@ -1,23 +1,32 @@
 import axios from 'axios';
 
-// Vite automatically selects the correct VITE_API_URL based on the environment
-const rawUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+// 1. Grab your target endpoint from the environment or fall back safely
+const baseInput = import.meta.env.VITE_API_URL|| "https://dimar.pythonanywhere.com";
+// const baseInput = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-// Clean the URL and ensure the /api/v1/ suffix
-const cleanBase = rawUrl.replace(/\/$/, '');
-const API_BASE_URL = `${cleanBase}/api/v1/`;
+// 2. Clear out any accidental dual slash handles, then firmly lock down the api/v1 suffix path
+const cleanBase = baseInput.replace(/\/$/, '');
+const API_BASE_URL = cleanBase.includes('/api/v1') ? `${cleanBase}/` : `${cleanBase}/api/v1/`;
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BASE_URL, // Enforces exactly: 'https://dimar.pythonanywhere.com/api/v1/'
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
-  if (token) config.headers.Authorization = `Token ${token}`;
-  return config;
-});
+// Interceptor to automatically attach your authentication token to outgoing requests
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Token ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export default api;
