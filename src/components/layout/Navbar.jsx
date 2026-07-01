@@ -174,9 +174,7 @@ function Navbar() {
                 {username.charAt(0).toUpperCase()}
               </div>
             )}
-            <span className="dropdown-arrow">▼</span>
           </button>
-
           {isDropdownOpen && (
             <ul className="profile-dropdown">
               <li className="dropdown-header">
