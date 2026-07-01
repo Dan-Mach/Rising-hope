@@ -57,7 +57,7 @@ function Login() {
        
         {error && <p className="login-error">{error}</p>}
       </form>  
-      <footer className="login-footer"><p>© 2024 Pharmacy Management System</p></footer>   
+      <footer className="login-footer"><p>© 2026 Pharmacy Management System</p></footer>   
     </div>
     
   );

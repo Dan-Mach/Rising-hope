@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // 1. Grab your target endpoint from the environment or fall back safely
-const baseInput = import.meta.env.VITE_API_URL ||  import.meta.env.VITE_API_URL_DEV ;
+const baseInput = import.meta.env.VITE_API_URL ||  import.meta.env.VITE_API_URL_DEV 
 // const baseInput = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // 2. Clear out any accidental dual slash handles, then firmly lock down the api/v1 suffix path
