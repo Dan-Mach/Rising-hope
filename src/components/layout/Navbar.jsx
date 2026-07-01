@@ -180,7 +180,7 @@ function Navbar() {
           {isDropdownOpen && (
             <ul className="profile-dropdown">
               <li className="dropdown-header">
-                <strong>{username}</strong>
+                <strong>{username || "Guest"}</strong>
                 <small>{role.replace('_', ' ')}</small>
               </li>
               <li><Link to="/profile" onClick={closeDropdown}>Edit Profile</Link></li>
