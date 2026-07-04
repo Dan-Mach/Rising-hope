@@ -32,6 +32,10 @@
   color: var(--text-muted);
 }
 
+.ward-table tr:last-child td {
+  border-bottom: none;
+}
+
 .bed-badge {
     background-color: var(--info);
     color: var(--btn-text-dark);

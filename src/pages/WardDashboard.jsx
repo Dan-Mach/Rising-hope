@@ -121,7 +121,6 @@ function WardDashboard() {
     <div className="ward-page">
       <div className="ward-header">
         <h2>In-Patient Ward Dashboard</h2>
-        <button onClick={fetchAdmittedPatients} className="refresh-btn">↻ Refresh</button>
       </div>
 
       {error && <p className="page-error">{error}</p>}
@@ -137,27 +136,39 @@ function WardDashboard() {
             </tr>
           </thead>
           <tbody>
-            {loading && <tr><td colSpan="4">Loading...</td></tr>}
-            {!loading && patients.length === 0 && <tr><td colSpan="4">No patients currently admitted.</td></tr>}
-            
-            {patients.map(visit => (
-              <tr key={visit.id}>
-                <td>
-                    <div className="bed-badge">
-                        {visit.ward || 'Gen'} - {visit.bed_number || 'Unassigned'}
-                    </div>
-                </td>
-                <td><strong>{visit.patient_name}</strong></td>
-                <td>{new Date(visit.visit_date).toLocaleDateString()}</td>
-                <td>
-                  <div className="action-buttons">
-                    <button onClick={() => handleOpenLogModal(visit)} className="log-btn">Add Vitals</button>
-                    <button onClick={() => handleOpenHistory(visit)} className="history-btn">View Logs</button>
-                    <button onClick={() => handleDischarge(visit)} className="discharge-btn">Discharge</button>
-                  </div>
-                </td>
+            {loading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <tr key={`skeleton-${index}`} className="skeleton-row">
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '70px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '140px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-badge" style={{ width: '90px' }}></div></td>
+                  <td><div className="skeleton-block skeleton-text" style={{ width: '100px' }}></div></td>
+                </tr>
+              ))
+            ) : patients.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="text-center">No patients currently admitted.</td>
               </tr>
-            ))}
+            ) : (
+              patients.map(visit => (
+                <tr key={visit.id}>
+                  <td>
+                    <div className="bed-badge">
+                      {visit.ward || 'Gen'} - {visit.bed_number || 'Unassigned'}
+                    </div>
+                  </td>
+                  <td><strong>{visit.patient_name}</strong></td>
+                  <td>{new Date(visit.visit_date).toLocaleDateString()}</td>
+                  <td>
+                    <div className="action-buttons">
+                      <button onClick={() => handleOpenLogModal(visit)} className="log-btn">Add Vitals</button>
+                      <button onClick={() => handleOpenHistory(visit)} className="history-btn">View Logs</button>
+                      <button onClick={() => handleDischarge(visit)} className="discharge-btn">Discharge</button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
