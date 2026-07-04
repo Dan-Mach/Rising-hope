@@ -46,7 +46,7 @@ function Staff() {
       setTotalEmployees(response.data.count || 0);
       setError(null);
     } catch (err) {
-      setError('Failed to fetch system employees registry records.');
+      setError('Failed to fetch system employees registry records.', err);
     } finally {
       setLoading(false);
     }

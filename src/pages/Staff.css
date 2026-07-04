@@ -4,7 +4,8 @@
   background-color: var(--bg-light);
   border: 1px solid var(--border-muted);
   border-radius: 8px;
-  padding: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 12px oklch(from var(--text) l c h / 0.02);
 }
 
 /* Form inside the modal overlay */
@@ -56,6 +57,12 @@
   color: var(--text);
 }
 
+.staff-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
 /* Table layout styling configurations */
 .staff-table th {
   text-align: left;
@@ -67,6 +74,10 @@
 .staff-table td {
   padding: 12px 10px;
   border-bottom: 1px solid var(--border-muted);
+}
+
+.staff-table tr:last-child td {
+  border-bottom: none;
 }
 
 .role-badge {
