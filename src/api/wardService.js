@@ -6,7 +6,7 @@ const getAdmittedPatients = (page, pageSize) => {
     params: {
       page,
       page_size: pageSize,
-      status: 'ADMITTED' // Filters for In-Patients
+      status: 'ADMITTED' 
     }
   });
 };

@@ -1,17 +1,16 @@
-// src/components/common/Button.jsx
 import React from 'react';
 
 function Button({ 
   children, 
   onClick, 
   type = 'button', 
-  variant = 'submit', // Options: 'submit', 'edit', 'delete'
+  variant = 'submit',
   className = '', 
   style,
   disabled,
   ...props 
 }) {
-  // Dynamically maps base variants and active state triggers
+
   const baseClass = [
     `${variant}-btn`,
     disabled ? 'btn-disabled' : '',

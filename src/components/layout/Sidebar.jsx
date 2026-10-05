@@ -5,8 +5,6 @@ import './Sidebar.css';
 
 function Sidebar({ isCollapsed, toggleSidebar }) {
   const { user,  } = useAuth();
-
-  // Access nested 'user' object for role safely
   const role = user?.user?.employee_type;
 
   // Safety Check

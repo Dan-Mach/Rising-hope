@@ -1,7 +1,6 @@
-// src/api/labService.js
+
 import api from './api';
 
-// --- Test Catalog (Definitions) ---
 const getAvailableTests = () => {
   return api.get('lab/tests/');
 };
@@ -14,7 +13,6 @@ const deleteLabTest = (id) => {
   return api.delete(`lab/tests/${id}/`);
 };
 
-// --- Test Requests (Patient Data) ---
 const getTestRequests = (page, pageSize, statusFilter) => {
   return api.get('lab/requests/', {
     params: {

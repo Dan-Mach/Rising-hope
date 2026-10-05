@@ -1,7 +1,6 @@
 import api from './api';
 
 const login = async (username, password) => {
-  // 🟢 Relative path (No leading slash) chains perfectly into /api/v1/
   const response = await api.post('get-token/', { 
     username,
     password,
@@ -15,7 +14,6 @@ const login = async (username, password) => {
 };
 
 const getCurrentUser = async () => {
-  // 🟢 Relative path (No leading slash)
   const response = await api.get('users/employees/me/');
   return response.data;
 };

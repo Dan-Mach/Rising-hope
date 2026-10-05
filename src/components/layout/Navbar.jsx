@@ -14,11 +14,6 @@ function Navbar() {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
   const dropdownRef = useRef(null);
-
-// Inside your Navbar function in Navbar.jsx
-
-
-
   const searchHints = [
     "Search for data, or files...",
     "Try searching for records...",
@@ -60,7 +55,6 @@ function Navbar() {
   const role = getUserRole();
   const username = getUsername();
   const profilePicUrl = getProfilePic();
-  // Update your allLinks array
   const allLinks = [
     { name: 'Dashboard', path: '/' },
     { name: 'Patients Registry', path: '/patients' },
@@ -68,21 +62,17 @@ function Navbar() {
     { name: 'Consultations', path: '/consultation' },
     { name: 'Laboratory', path: '/laboratory' },
     { name: 'Pharmacy', path: '/pharmacy' },
-    // Define allowed roles for Inventory
     { name: 'Inventory Management', path: '/inventory', allowedRoles: ['ADMIN', 'STORE_MANAGER'] },
     { name: 'Billing Records', path: '/billing' },
-    // Define allowed roles for Staff
     { name: 'Staff Management', path: '/staff', allowedRoles: ['ADMIN'] },
     { name: 'Account Settings', path: '/settings' },
     { name: 'Edit Profile', path: '/profile' }
   ];
 
   const navLinks = allLinks.filter(link => {
-    // If the link has specific allowed roles, check if current role is included
     if (link.allowedRoles) {
       return link.allowedRoles.includes(role);
     }
-    // Otherwise, it's visible to everyone
     return true;
   });
   const handleLogout = () => {
