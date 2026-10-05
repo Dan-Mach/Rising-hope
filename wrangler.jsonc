@@ -1,8 +1,9 @@
-
 {
-  "name": "arising-hope",
-  "compatibility_date": "2025-11-25",
-  "assets": {
-    "directory": "dist" 
-  }
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true,
+      "persist": true
+    }
+  },
 }
